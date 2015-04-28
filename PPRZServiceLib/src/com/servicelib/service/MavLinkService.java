@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.aidl.core.ConnectionParameter;
 import com.servicelib.core.mavlink.connection.MavLinkConnection;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MavLinkService extends Service {
 
-//    private static final String TAG = MavLinkService.class.getSimpleName();
+    private static final String TAG = MavLinkService.class.getSimpleName();
 
     private MavLinkServiceClient mMavLinkServiceClient;
 
