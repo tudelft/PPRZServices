@@ -87,7 +87,6 @@ public class MavLinkClient implements MavLinkConnectionListener, MavLinkOutputSt
 
         if (mServiceClient.getConnectionStatus(this.connParams) == MavLinkConnection.MAVLINK_CONNECTED) {
         	mServiceClient.disconnectMavLink(this.connParams, this);
-            listener.notifyDisconnected();
         }
     }
 

@@ -87,7 +87,9 @@ public class MainActivity extends Activity {
         public void onEvent(String type) {
     		switch(type) {
     			case "CONNECTED": {
-    				updateConnectButton();
+    				Log.d(TAG, "Connected!");
+    				isConnected = true;
+    				updateConnectButton();  				
 	    			break;
     			}   			
 	
@@ -96,6 +98,9 @@ public class MainActivity extends Activity {
 	    		}
 	    			
 	    		case "DISCONNECTED": {
+	    			Log.d(TAG, "Disconnected!");
+	    			isConnected = false;
+	    			updateConnectButton();	    			
 	    			break;
 	    		}
 	    		
@@ -234,7 +239,14 @@ public class MainActivity extends Activity {
     }
 	
     public void onButtonRequest(View view) {
-    	connectToDroneClient();
+    	if (!isConnected)
+    		connectToDroneClient();
+		else
+			try {
+				mServiceClient.disconnectDroneClient();
+			} catch (RemoteException e) {
+				// TODO: Handle exception
+			}
     }
     
     /**
