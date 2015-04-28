@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">pprzservices</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="connect_button">Connect</string>
+    <string name="disconnect_button">Disconnect</string>
+    
+    <string name="altitude">altitude:</string>
+    <string name="target_altitude">target_altitude:</string>
+
+    <string name="climb_speed">climb_speed:</string>
+    <string name="ground_speed">ground_speed</string>
+    <string name="air_speed">vertical_speed:</string>
+    <string name="target_speed">target_speed</string>
+    
+    <string name="roll">roll:</string>
+    <string name="pitch">pitch:</string>
+    <string name="yaw">yaw:</string>
+    
+    <string name="batt_volt">batt_volt:</string>
+    <string name="batt_remain">batt_remain:</string>
+    <string name="batt_current">batt_current:</string>
+    
+</resources>

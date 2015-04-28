@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/batteryVerticalLayout"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" 
+    android:background="@drawable/circle"
+    android:gravity="center" >
+    
+    <LinearLayout
+        android:id="@+id/batteryHorizontalLayout"
+       	android:orientation="horizontal"
+       	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent" 
+    	android:gravity="center" >
+		
+	    <TextView
+	        android:id="@+id/batteryValue"
+	        style="@style/telemetryText"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"  
+	        android:text="@string/telemetry_default_value" />
+
+	    <TextView
+	        android:id="@+id/batteryUnitLabel"
+	        style="@style/telemetryText"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="-3dp"
+	        android:text="@string/volt_unit" />
+	    
+    </LinearLayout>
+</LinearLayout>
