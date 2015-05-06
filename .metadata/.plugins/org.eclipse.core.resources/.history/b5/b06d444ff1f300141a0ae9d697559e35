@@ -1,0 +1,9 @@
+package com.model;
+
+public class Position {
+	/**
+	 * Global position in Latitude, Longitude and Altitude.
+	 * Units lat,lon: degrees*1e7
+	 * Units alt: milimeters above reference ellipsoid
+	 */
+}

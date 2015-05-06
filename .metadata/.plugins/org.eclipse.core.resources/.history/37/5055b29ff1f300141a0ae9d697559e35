@@ -1,0 +1,19 @@
+package com.model;
+
+public class Position {
+	/**
+	 * Global position in latitude, longitude and altitude.
+	 * Units lat,lon: degrees*1e7
+	 * Units alt: milimeters above reference ellipsoid
+	 */
+	private int lat;
+	
+	private int lon;
+	
+	private int alt;
+	
+	/**
+     * Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX
+     */
+	private short hdg = UINT16_MAX;
+}

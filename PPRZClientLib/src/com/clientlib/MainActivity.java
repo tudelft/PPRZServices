@@ -317,9 +317,9 @@ public class MainActivity extends Activity {
 			public void run() {
 				try {
 					Attitude mAttitude = getAttribute("ATTITUDE");					
-					roll.setText(getString(R.string.roll) + " " + String.format("%.2f", mAttitude.getRoll()));
-					pitch.setText(getString(R.string.pitch) + " " + String.format("%.2f", mAttitude.getPitch()));
-					yaw.setText(getString(R.string.yaw) + " " + String.format("%.2f", mAttitude.getYaw()));
+					roll.setText(getString(R.string.roll) + " " + String.format("%.2f", (mAttitude.getRoll() * 180.0 / Math.PI)));
+					pitch.setText(getString(R.string.pitch) + " " + String.format("%.2f", (mAttitude.getPitch() * 180.0 / Math.PI)));
+					yaw.setText(getString(R.string.yaw) + " " + String.format("%.2f", (mAttitude.getYaw() * 180.0 / Math.PI)));
 				} catch (Throwable t) {
 					Log.e(TAG, "Error while updating the attitude", t);
 				}

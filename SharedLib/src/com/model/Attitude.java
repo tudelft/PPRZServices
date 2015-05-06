@@ -5,6 +5,11 @@ public class Attitude {
     private double pitch = (double)  0.;
     private double yaw = (double) 0.;
 
+    /**
+     * The Euler angles
+     * Units: radians
+     */
+    
     public double getRoll() {
         return roll;
     }
