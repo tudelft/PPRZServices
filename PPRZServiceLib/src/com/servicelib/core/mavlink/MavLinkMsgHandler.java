@@ -6,7 +6,7 @@ import com.MAVLink.common.msg_heartbeat;
 import com.MAVLink.common.msg_vfr_hud;
 import com.MAVLink.enums.MAV_MODE_FLAG;
 import com.MAVLink.enums.MAV_STATE;
-import com.servicelib.core.model.Drone;
+import com.servicelib.core.drone.Drone;
 
 public class MavLinkMsgHandler {
 
@@ -40,6 +40,9 @@ public class MavLinkMsgHandler {
                 drone.onHeartbeat(msg_heart);
                 break;
             }
+            
+            // TODO: Add additional messages
+            
             default:
                 break;
         }

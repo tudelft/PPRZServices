@@ -12,7 +12,6 @@ import com.servicelib.core.drone.DroneInterfaces.OnDroneListener;
 import com.servicelib.core.mavlink.MavLinkClient;
 import com.servicelib.core.mavlink.MavLinkMsgHandler;
 import com.servicelib.core.mavlink.MavLinkStreams;
-import com.servicelib.core.model.Drone;
 import com.servicelib.service.MavLinkServiceClient;
 
 /**

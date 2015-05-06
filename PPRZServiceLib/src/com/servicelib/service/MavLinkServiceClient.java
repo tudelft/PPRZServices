@@ -11,10 +11,10 @@ import com.aidl.core.ConnectionParameter;
 import com.aidl.core.model.Altitude;
 import com.aidl.core.model.Attitude;
 import com.aidl.core.model.Speed;
+import com.servicelib.core.drone.Drone;
 import com.servicelib.core.drone.DroneClient;
 import com.servicelib.core.mavlink.connection.MavLinkConnection;
 import com.servicelib.core.mavlink.connection.MavLinkConnectionListener;
-import com.servicelib.core.model.Drone;
 
 import java.lang.ref.SoftReference;
 import java.util.concurrent.ConcurrentHashMap;
