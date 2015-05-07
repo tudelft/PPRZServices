@@ -74,15 +74,15 @@ public class Drone {
     	return mSpeed.getTargetSpeed();
     }
     
-    public short getBattVolt() {
+    public int getBattVolt() {
     	return mBattery.getBattVolt();
     }
     
-    public short getBattLevel() {
+    public int getBattLevel() {
     	return mBattery.getBattLevel();
     }
     
-    public short getBattCurrent() {
+    public int getBattCurrent() {
     	return mBattery.getBattCurrent();
     }
     
