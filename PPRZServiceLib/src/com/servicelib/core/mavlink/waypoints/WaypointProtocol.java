@@ -38,7 +38,7 @@ public class WaypointProtocol {
     Handler mHandler;
     
     public WaypointProtocol(DroneClient client, Handler handler) {
-    	this.mClient = drone;
+    	this.mClient = client;
     	this.mHandler = handler;
     }
     
@@ -111,17 +111,10 @@ public class WaypointProtocol {
      * Send request for a waypoints 
      */
     public void sendRequestWp() {
-    	
-    }
-    
-    /**
-     * Send request for a list of waypoints
-     */
-    public void sendRequestWp() {
     	msg_mission_request msg = new msg_mission_request();
 		msg.target_system = mClient.getDrone().getSysid();
 		msg.target_component = mClient.getDrone().getCompid();
-		msg.seq = (short) index;
+		msg.seq = 0;
 		mClient.getMavLinkClient().sendMavPacket(msg.pack());
     }
     

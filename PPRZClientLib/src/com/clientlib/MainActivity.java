@@ -116,7 +116,15 @@ public class MainActivity extends Activity {
 	    		}
 	    		
 	    		case "BATTERY_UPDATED": {
-	    			
+	    			break;
+	    		}
+	    		
+	    		case "POSITION_UPDATED": {
+	    			break;
+	    		}
+	    		
+	    		case "SATELLITES_VISIBLE_UPDATED": {
+	    			break;
 	    		}
 	    		
 	    		default:
