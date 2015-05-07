@@ -1,5 +1,10 @@
 package com.servicelib.core.mavlink.waypoints;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.MAVLink.Messages.MAVLinkMessage;
+import com.MAVLink.common.msg_mission_count;
 import com.MAVLink.common.msg_mission_request;
 import com.MAVLink.common.msg_mission_request_list;
 import com.servicelib.core.drone.Drone;
@@ -16,11 +21,11 @@ public class WaypointProtocol {
 	/** 
 	 * State machine
 	 */
-	enum States { 
+	enum StateMachine { 
 		STATE_IDLE, STATE_REQUEST_LIST, STATE_REQUEST_WP, STATE_WRITE_COUNT, STATE_WRITE_WP
 	}
 	
-	private States state = States.STATE_IDLE;
+	private StateMachine state = StateMachine.STATE_IDLE;
 	
 	// Timeout 
 	private static final long TIMEOUT = 15000; //ms
@@ -33,6 +38,8 @@ public class WaypointProtocol {
     // Number of waypoints receiver from the MAV
     private short count = 0;
     
+    private List<Waypoint> waypoints = new ArrayList<Waypoint>();
+    
     DroneClient mClient; 
     
     Handler mHandler;
@@ -43,19 +50,32 @@ public class WaypointProtocol {
     }
     
     /**
-     * Handle mission-related messages
+     * Waypoint message handler
      */
-    public void missionHandler() {
+    public void waypointMsgHandler(MAVLinkMessage msg) {
     	switch (state) {
-    		case STATE_IDLE: {
+    		case STATE_IDLE: {   			
     			break;
     		}
     		
     		case STATE_REQUEST_LIST: {
+    			if (msg.msgid == msg_mission_count.MAVLINK_MSG_ID_MISSION_COUNT) {
+    				// Store the number of waypoints
+                    count = ((msg_mission_count) msg).count;
+                    
+                    // Clear the current list (if any waypoints are present)
+                    waypoints.clear();
+                    
+                    // Request the first waypoint
+                    requestWp((short)waypoints.size());
+                    
+                    state = StateMachine.STATE_REQUEST_WP;
+                }
     			break;
     		}
     		
     		case STATE_REQUEST_WP: {
+    			
     			break;
     		}
     		
@@ -83,10 +103,10 @@ public class WaypointProtocol {
      */
     public void requestList() {
     	// Only request list if the state of the state machine is STATE_IDLE
-    	if (state != States.STATE_IDLE)
+    	if (state != StateMachine.STATE_IDLE)
     		return;
     	
-    	state = States.STATE_REQUEST_LIST;
+    	state = StateMachine.STATE_REQUEST_LIST;
     	sendRequestList();
     }
     
@@ -103,18 +123,18 @@ public class WaypointProtocol {
     /** 
      * Request waypoint
      */
-    public void requestWp() {
+    public void requestWp(short seq) {
     	
     }
     
     /**
      * Send request for a waypoints 
      */
-    public void sendRequestWp() {
+    public void sendRequestWp(short seq) {
     	msg_mission_request msg = new msg_mission_request();
 		msg.target_system = mClient.getDrone().getSysid();
 		msg.target_component = mClient.getDrone().getCompid();
-		msg.seq = 0;
+		msg.seq = seq;
 		mClient.getMavLinkClient().sendMavPacket(msg.pack());
     }
     
