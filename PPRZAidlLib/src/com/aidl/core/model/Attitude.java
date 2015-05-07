@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * This function serializes the Altitude class
+ * This function serializes the Attitude class
  */
 public class Attitude implements Parcelable {
 	private double mRoll;

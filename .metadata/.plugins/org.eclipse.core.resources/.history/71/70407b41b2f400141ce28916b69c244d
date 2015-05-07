@@ -1,0 +1,78 @@
+package com.aidl.core.model;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+/**
+ * This function serializes the Position class
+ */
+public class Battery implements Parcelable {
+	private int battVolt;
+	
+	private int battLevel;
+	
+	private int battCurrent;
+	
+	public Battery() {
+	}
+	
+	public Battery(int battVolt, int battLevel, int battCurrent) {
+		this.battVolt = battVolt;
+		this.battLevel = battLevel;
+		this.battCurrent = battCurrent;
+	}
+	
+	public Position(Parcel in) {
+		this.battVolt = in.readInt();
+		this.battLevel = in.readInt();
+		this.battCurrent = in.readInt();
+	}
+	
+	public void setBattVolt(int battVolt) {
+		this.battVolt = battVolt;
+	}
+	
+	public void setBattLevel(int battLevel) {
+		this.battLevel = battLevel;
+	}
+	
+	public void setBattCurrent(int battCurrent) {
+		this.battCurrent = battCurrent;
+	}
+	
+	public byte getBattVolt() {
+		return this.battVolt;
+	}
+	
+	public int getBattLevel() {
+		return this.battLevel;
+	}
+	
+	public int getBattCurrent() {
+		return this.battCurrent;
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeByte(this.satVisible);
+		dest.writeInt(this.timeStamp);
+		dest.writeInt(this.lat);
+		dest.writeInt(this.lon);
+		dest.writeInt(this.alt);
+	}
+	
+	public static final Parcelable.Creator<Position> CREATOR = new Parcelable.Creator<Position>() {
+        public Position createFromParcel(Parcel source) {
+            return new Position(source);
+        }
+
+        public Position[] newArray(int size) {
+            return new Position[size];
+        }
+    };
+}

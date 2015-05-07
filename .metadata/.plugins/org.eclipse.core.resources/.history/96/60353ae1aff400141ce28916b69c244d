@@ -1,0 +1,87 @@
+package com.aidl.core.model;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+/**
+ * This function serializes the Position class
+ */
+public class Position implements Parcelable {
+	private byte satVisible;
+	
+	private int timeStamp;
+	
+	private int lat;
+	
+	private int lon;
+	
+	private int alt;
+	
+	public Position() {
+	}
+	
+	public Position(byte satVisible, int timeStamp, int lat, int lon, int alt) {
+		this.satVisible = satVisible;
+		this.timeStamp = timeStamp;
+		this.lat = lat;
+		this.lon = lon;
+		this.alt = alt;
+	}
+	
+	public Position(Parcel in) {
+		this.satVisible = in.readByte();
+		this.timeStamp = in.readInt();
+		this.lat = in.readInt();
+		this.lon = in.readInt();
+		this.alt = in.readInt();
+	}
+	
+	public void setSatVisible(byte satVisible) {
+		this.satVisible = satVisible;
+	}
+	
+	public void setTimeStamp(int timeStamp) {
+		this.timeStamp = timeStamp;
+	}
+	
+	public void setLat(int lat) {
+		this.lat = lat;
+	}
+	
+	public void setLat(int lon) {
+		this.lon = lon;
+	}
+	
+	public void setAlt(int alt) {
+		this.alt = alt;
+	}
+	
+	public double getAltitude() {
+		return mAltitude;
+	}
+	
+	public double getTargetAltitude() {
+		return mTargetAltitude;
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeDouble(mAltitude);
+		dest.writeDouble(mTargetAltitude);
+	}
+	
+	public static final Parcelable.Creator<Altitude> CREATOR = new Parcelable.Creator<Altitude>() {
+        public Altitude createFromParcel(Parcel source) {
+            return new Altitude(source);
+        }
+
+        public Altitude[] newArray(int size) {
+            return new Altitude[size];
+        }
+    };
+}

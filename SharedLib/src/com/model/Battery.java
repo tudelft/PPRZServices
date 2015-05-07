@@ -4,19 +4,19 @@ public class Battery {
     /* TODO: Replace with true capacity */
     private static final double BATTERY_CAPACITY = 0;
     
-    private short battVolt = -1; // in millivolts
-    private short battLevel = -1;
-    private short battCurrent = -1;
+    private int battVolt = -1; // in millivolts
+    private int battLevel = -1;
+    private int battCurrent = -1;
 
-    public short getBattVolt() {
+    public int getBattVolt() {
         return battVolt;
     }
 
-    public short getBattLevel() {
+    public int getBattLevel() {
         return battLevel;
     }
 
-    public short getBattCurrent() {
+    public int getBattCurrent() {
         return battCurrent;
     }
 
@@ -24,7 +24,7 @@ public class Battery {
         return (1-battLevel/100.0)*BATTERY_CAPACITY;
     }
 
-    public void setBatteryState(short battVolt, short battLevel, short battCurrent) {
+    public void setBatteryState(int battVolt, int battLevel, int battCurrent) {
         if (this.battVolt != battVolt | this.battLevel != battLevel 
         		| this.battCurrent != battCurrent) {
             this.battVolt = battVolt;

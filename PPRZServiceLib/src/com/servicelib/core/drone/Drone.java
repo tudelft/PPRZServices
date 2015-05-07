@@ -123,7 +123,7 @@ public class Drone {
         mHeartbeat.heartbeatState = HeartbeatState.NORMAL_HEARTBEAT;
     }
     
-    public void setBatteryState(short battVolt, short battLevel, short battCurrent) {
+    public void setBatteryState(int battVolt, int battLevel, int battCurrent) {
     	mBattery.setBatteryState(battVolt, battLevel, battCurrent);
     }
     
