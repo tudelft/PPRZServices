@@ -16,17 +16,17 @@ public class Drone {
     
 	private final DroneClient mClient;
 	
-	private final Attitude mAttitude = new Attitude();
+	private final Attitude attitude = new Attitude();
 	
-	private final Altitude mAltitude = new Altitude();
+	private final Altitude altitude = new Altitude();
 	
-	private final Speed mSpeed = new Speed();
+	private final Speed speed = new Speed();
 	
-	private final Heartbeat mHeartbeat = new Heartbeat();
+	private final Heartbeat heartbeat = new Heartbeat();
 	
-	private final Battery mBattery = new Battery();
+	private final Battery battery = new Battery();
 	
-	private final Position mPosition = new Position();
+	private final Position position = new Position();
     
 	public Drone(DroneClient client) {
 		this.mClient = client;
@@ -39,74 +39,106 @@ public class Drone {
     }
     
     public double getAltitude() {
-    	return mAltitude.getAltitude();
+    	return this.altitude.getAltitude();
     }
     
     public double getTargetAltitude() {
-    	return mAltitude.getTargetAltitude();
+    	return this.altitude.getTargetAltitude();
     }
     
     public double getRoll() {
-    	return mAttitude.getRoll();
+    	return this.attitude.getRoll();
     }
     
     public double getPitch() {
-    	return mAttitude.getPitch();
+    	return this.attitude.getPitch();
     }
     
     public double getYaw() {
-    	return mAttitude.getYaw();
+    	return this.attitude.getYaw();
     }
     
     public double getGroundSpeed() {
-    	return mSpeed.getGroundSpeed();
+    	return this.speed.getGroundSpeed();
     }
     
     public double getAirSpeed() {
-    	return mSpeed.getAirSpeed();
+    	return this.speed.getAirSpeed();
     }
     
     public double getClimbSpeed() {
-    	return mSpeed.getClimbSpeed();
+    	return this.speed.getClimbSpeed();
     }
     
     public double getTargetSpeed() {
-    	return mSpeed.getTargetSpeed();
+    	return this.speed.getTargetSpeed();
+    }
+    
+    public byte getSysid() {
+        return this.heartbeat.getSysid();
+    }
+
+    public byte getCompid() {
+        return this.heartbeat.getCompid();
     }
     
     public int getBattVolt() {
-    	return mBattery.getBattVolt();
+    	return this.battery.getBattVolt();
     }
     
     public int getBattLevel() {
-    	return mBattery.getBattLevel();
+    	return this.battery.getBattLevel();
     }
     
     public int getBattCurrent() {
-    	return mBattery.getBattCurrent();
+    	return this.battery.getBattCurrent();
     }
+    
+	public byte getSatVisible() {
+		return this.position.getSatVisible();
+	}
+	
+	public int getTimeStamp() {
+		return this.position.getTimeStamp();
+	}
+	
+	public int getLat() {
+		return this.position.getLat();
+	}
+	
+	public int getLon() {
+		return this.position.getLon();
+	}
+	
+	public int getAlt() {
+		return this.position.getAlt();
+	}
+	
+	public int getHdg() {
+		return this.position.getHdg();
+	}
     
     public boolean isConnected() {
     	return IS_CONNECTED;
     }
     
     public void setRollPitchYaw(double roll, double pitch, double yaw) {
-    	mAttitude.setRollPitchYaw(roll, pitch, yaw);
+    	this.attitude.setRollPitchYaw(roll, pitch, yaw);
     	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.ATTITUDE_UPDATED);
     }
     
     public void setAltitudeGroundAndAirSpeeds(double altitude, double groundSpeed, double airSpeed, double climbSpeed) {
-    	mAltitude.setAltitude(altitude);
-    	mSpeed.setGroundAndAirSpeeds(groundSpeed, airSpeed, climbSpeed);
+    	this.altitude.setAltitude(altitude);
+    	this.speed.setGroundAndAirSpeeds(groundSpeed, airSpeed, climbSpeed);
     	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.ALTITUDE_SPEED_UPDATED);
     }
     
     public void onHeartbeat(msg_heartbeat msg) {
-        mHeartbeat.setSysid((byte) msg.sysid);
-        mHeartbeat.setCompid((byte) msg.compid);
-        mHeartbeat.setMavlinkVersion((byte)msg.mavlink_version);
+        this.heartbeat.setSysid((byte) msg.sysid);
+        this.heartbeat.setCompid((byte) msg.compid);
+        this.heartbeat.setMavlinkVersion((byte)msg.mavlink_version);
 
-        switch (mHeartbeat.heartbeatState) {
+        switch (this.heartbeat.heartbeatState) {
             case FIRST_HEARTBEAT: {               
             	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.HEARTBEAT_FIRST);             
                 break;
@@ -120,18 +152,21 @@ public class Drone {
             	break;
         }
 
-        mHeartbeat.heartbeatState = HeartbeatState.NORMAL_HEARTBEAT;
+        this.heartbeat.heartbeatState = HeartbeatState.NORMAL_HEARTBEAT;
     }
     
     public void setBatteryState(int battVolt, int battLevel, int battCurrent) {
-    	mBattery.setBatteryState(battVolt, battLevel, battCurrent);
+    	this.battery.setBatteryState(battVolt, battLevel, battCurrent);       
+        mClient.onDroneEvent(DroneInterfaces.DroneEventsType.BATTERY_UPDATED);
     }
     
     public void setSatVisible(byte satVisible) {
-    	mPosition.setSatVisible(satVisible);
+    	this.position.setSatVisible(satVisible);
+    	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.SATELLITES_VISIBLE_UPDATED);
     }
     
     public void setLlaHdg(int lat, int lon, int alt, short hdg) {
-    	mPosition.setLlaHdg(lat, lon, alt, hdg);
+    	this.position.setLlaHdg(lat, lon, alt, hdg);
+    	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.POSITION_UPDATED);
     }
 }

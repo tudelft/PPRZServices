@@ -10,7 +10,10 @@ import com.aidl.IMavLinkServiceClient;
 import com.aidl.core.ConnectionParameter;
 import com.aidl.core.model.Altitude;
 import com.aidl.core.model.Attitude;
+import com.aidl.core.model.Battery;
+import com.aidl.core.model.Position;
 import com.aidl.core.model.Speed;
+import com.aidl.core.model.Heartbeat;
 import com.servicelib.core.drone.Drone;
 import com.servicelib.core.drone.DroneClient;
 import com.servicelib.core.mavlink.connection.MavLinkConnection;
@@ -87,7 +90,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 		
 		switch (type) {
 			case "HEARTBEAT": {
-//				carrier.putParcelable(type, new Heartbeat(drone.getSysid(), drone.getCompid()));
+				carrier.putParcelable(type, new Heartbeat(drone.getSysid(), drone.getCompid()));
 				break;
 			}
 			
@@ -107,7 +110,12 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			}
 			
 			case "BATTERY": {
+				carrier.putParcelable(type, new Battery(drone.getBattVolt(), drone.getBattLevel(), drone.getBattCurrent()));
 				break;
+			}
+			
+			case "POSITION": {
+				carrier.putParcelable(type, new Position(drone.getSatVisible(), drone.getTimeStamp(), drone.getLat(), drone.getLon(), drone.getAlt(), drone.getHdg()));
 			}
 			
 			default:

@@ -34,7 +34,13 @@ public class DroneInterfaces {
         ALTITUDE_SPEED_UPDATED,
         
         // Battery updated
-        BATTERY_UPDATED
+        BATTERY_UPDATED,
+        
+        // Position updated
+        POSITION_UPDATED,
+        
+        // Number of satellites updated
+        SATELLITES_VISIBLE_UPDATED
     }
 
     public interface OnDroneListener {

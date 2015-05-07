@@ -85,6 +85,10 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
     public Drone getDrone() {
         return drone;
     }
+    
+    public MavLinkClient getMavLinkClient() {
+    	return mavLinkClient;
+    }
 
     public boolean isConnected() {
         return drone.isConnected();
