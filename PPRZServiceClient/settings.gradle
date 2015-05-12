@@ -1,0 +1,3 @@
+include ':aidllib', ':app'
+
+project(':aidllib').projectDir = new File(settingsDir, '../PPRZServices/aidllib')
