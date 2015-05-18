@@ -10,7 +10,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 /**
- * Provides support for mavlink connection via udp.
+ * Provides support for MAVLink connection via UDP.
  */
 public class UdpConnection extends MavLinkConnection {
 

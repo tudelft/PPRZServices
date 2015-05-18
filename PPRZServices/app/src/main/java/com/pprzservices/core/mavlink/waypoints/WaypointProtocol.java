@@ -52,9 +52,11 @@ public class WaypointProtocol {
     
     Handler mHandler;
     
-    public WaypointProtocol(DroneClient client, Handler handler) {
+    public WaypointProtocol(DroneClient client) {
     	this.mClient = client;
-    	this.mHandler = handler;
+
+		// The handler grabs hold of the service looper
+    	this.mHandler = new Handler();
     }
     
     /**
@@ -167,7 +169,7 @@ public class WaypointProtocol {
 		msg.seq = seq;
 		mClient.getMavLinkClient().sendMavPacket(msg.pack());
     }
-    
+
     /**
      * Post timeout runnable according to Handler documentation
      */
@@ -175,9 +177,6 @@ public class WaypointProtocol {
         @Override
         public void run() {
         	Log.d(TAG, "The request timed-out!");
-        	
-        	// TODO: If timeout notify main thread
-        	
         }
     };
  

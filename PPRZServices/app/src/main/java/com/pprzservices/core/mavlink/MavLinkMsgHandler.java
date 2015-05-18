@@ -10,29 +10,38 @@ import com.MAVLink.common.msg_vfr_hud;
 import com.MAVLink.enums.MAV_MODE_FLAG;
 import com.MAVLink.enums.MAV_STATE;
 import com.pprzservices.core.drone.Drone;
+import com.pprzservices.core.drone.DroneClient;
+import com.pprzservices.core.mavlink.waypoints.WaypointProtocol;
 
 public class MavLinkMsgHandler {
 
     private final String TAG = MavLinkMsgHandler.class.getSimpleName();
 
-    private Drone drone;
+    private DroneClient mDroneClient;
 
-    public MavLinkMsgHandler(Drone drone) {
-        this.drone = drone;
+    private WaypointProtocol missionProtocol;
+
+    public MavLinkMsgHandler(DroneClient droneClient) {
+        mDroneClient = droneClient;
+
+        missionProtocol = new WaypointProtocol(mDroneClient);
     }
 
     public void receiveData(MAVLinkMessage msg)
     {
+        // Handle any message that might contain mission data
+        missionProtocol.waypointMsgHandler(msg);
+
         switch (msg.msgid) {
 	        case msg_attitude.MAVLINK_MSG_ID_ATTITUDE: {
 	            msg_attitude msg_att = (msg_attitude) msg;
-	            drone.setRollPitchYaw(msg_att.roll, msg_att.pitch, msg_att.yaw);
+                mDroneClient.getDrone().setRollPitchYaw(msg_att.roll, msg_att.pitch, msg_att.yaw);
 	            break;
 	        }
 	        
 	        case msg_vfr_hud.MAVLINK_MSG_ID_VFR_HUD: {
 	            msg_vfr_hud msg_vfr_hud = (msg_vfr_hud) msg;
-	            drone.setAltitudeGroundAndAirSpeeds(msg_vfr_hud.alt, msg_vfr_hud.groundspeed, msg_vfr_hud.airspeed, msg_vfr_hud.climb);
+                mDroneClient.getDrone().setAltitudeGroundAndAirSpeeds(msg_vfr_hud.alt, msg_vfr_hud.groundspeed, msg_vfr_hud.airspeed, msg_vfr_hud.climb);
 	            break;
 	        }
         
@@ -40,7 +49,7 @@ public class MavLinkMsgHandler {
                 msg_heartbeat msg_heart = (msg_heartbeat) msg;
                 checkIfFlying(msg_heart);
                 processState(msg_heart);
-                drone.onHeartbeat(msg_heart);
+                mDroneClient.getDrone().onHeartbeat(msg_heart);
                 break;
             }
             
@@ -48,7 +57,7 @@ public class MavLinkMsgHandler {
             	msg_battery_status msg_batt = (msg_battery_status) msg;
             	
             	// for now only use the first entry of the voltages array
-            	drone.setBatteryState(msg_batt.voltages[0], msg_batt.battery_remaining, msg_batt.current_battery);
+                mDroneClient.getDrone().setBatteryState(msg_batt.voltages[0], msg_batt.battery_remaining, msg_batt.current_battery);
             	break;
             }
             
@@ -56,7 +65,7 @@ public class MavLinkMsgHandler {
             	msg_gps_status msg_gps = (msg_gps_status) msg;
             	
             	// for now ignore all variables except the number of satellites
-            	drone.setSatVisible(msg_gps.satellites_visible);
+                mDroneClient.getDrone().setSatVisible(msg_gps.satellites_visible);
             	break;
             }
             
@@ -64,7 +73,7 @@ public class MavLinkMsgHandler {
             	msg_global_position_int msg_pos = (msg_global_position_int) msg;
             
             	// for now ignore the relative altitude and ground speeds
-            	drone.setLlaHdg(msg_pos.lat, msg_pos.lon, msg_pos.alt, msg_pos.hdg);
+                mDroneClient.getDrone().setLlaHdg(msg_pos.lat, msg_pos.lon, msg_pos.alt, msg_pos.hdg);
             	break;
             }
             
@@ -75,13 +84,13 @@ public class MavLinkMsgHandler {
 
     private void checkIfFlying(msg_heartbeat msg_heart) {
         final byte systemStatus = msg_heart.system_status;
-        final boolean wasFlying = drone.getState().isFlying();
+        final boolean wasFlying = mDroneClient.getDrone().getState().isFlying();
 
         final boolean isFlying = systemStatus == MAV_STATE.MAV_STATE_ACTIVE
                 || (wasFlying
                 && (systemStatus == MAV_STATE.MAV_STATE_CRITICAL || systemStatus == MAV_STATE.MAV_STATE_EMERGENCY));
 
-        drone.getState().setIsFlying(isFlying);
+        mDroneClient.getDrone().getState().setIsFlying(isFlying);
     }
 
     public void processState(msg_heartbeat msg_heart) {
@@ -89,7 +98,7 @@ public class MavLinkMsgHandler {
     }
 
     private void checkArmState(msg_heartbeat msg_heart) {
-        drone.getState().setArmed(
+        mDroneClient.getDrone().getState().setArmed(
                 (msg_heart.base_mode & (byte) MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED) == (byte) MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED);
     }
 }

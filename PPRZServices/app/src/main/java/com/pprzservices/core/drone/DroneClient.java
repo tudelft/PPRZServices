@@ -36,7 +36,7 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
         this.context = context;
         this.connParams = connParams;
         this.drone = new Drone(this);
-        this.mavLinkMsgHandler = new MavLinkMsgHandler(this.drone);
+        this.mavLinkMsgHandler = new MavLinkMsgHandler(this);
         this.mServiceClient = serviceClient;
         
         mavLinkClient = new MavLinkClient(context, this, connParams, mServiceClient);
@@ -74,6 +74,8 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
     @Override
     public void notifyReceivedData(MAVLinkPacket packet) {
         MAVLinkMessage receivedMsg = packet.unpack();
+
+        // Handle the MAVLink message
         this.mavLinkMsgHandler.receiveData(receivedMsg);
     }
 

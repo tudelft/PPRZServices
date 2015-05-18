@@ -208,11 +208,11 @@ public class MainActivity extends Activity {
 		
 		/* TODO: Fetch connection type */
 		
-        final int connectionType = 0; // UDP connection
+        final int connectionType = 1; // UDP connection
         
         /* TODO: Fetch server port */
         
-        final int serverPort = 5000; 
+        final int serverPort = 5000;
         
         Bundle extraParams = new Bundle();
 
@@ -223,7 +223,11 @@ public class MainActivity extends Activity {
                 extraParams.putInt("udp_port", serverPort);
                 connParams = new ConnectionParameter(connectionType, extraParams);
                 break;
-                
+
+			case 1:
+				connParams = new ConnectionParameter(connectionType, extraParams);
+				break;
+
             default:
             	connParams = null;
                 break;
