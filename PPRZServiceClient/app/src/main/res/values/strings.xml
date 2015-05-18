@@ -6,6 +6,9 @@
 
     <string name="connect_button">Connect</string>
     <string name="disconnect_button">Disconnect</string>
+    <string name="wp_button">Request WP</string>
+
+    <string name="service_connection">service_connection:</string>
 
     <string name="altitude">altitude:</string>
     <string name="target_altitude">target_altitude:</string>

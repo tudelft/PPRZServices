@@ -1,4 +1,4 @@
-package com.pprzservices.core.mavlink.waypoints;
+package com.aidllib.core.mavlink.waypoints;
 
 public class Waypoint {
 	private float lat;

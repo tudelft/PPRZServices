@@ -8,14 +8,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.clientlib.MainActivity" >
 
+    <!-- Service connection-->
+
+    <TextView
+        android:id="@+id/service_connection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/service_connection" />
+
     <!-- Altitude -->
     
     <TextView
         android:id="@+id/altitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/service_connection"
+        android:layout_below="@+id/service_connection"
         android:text="@string/altitude" />
 
     <TextView
@@ -26,7 +36,7 @@
         android:layout_below="@+id/altitude"
         android:text="@string/target_altitude" />
     
-    <!-- speed -->
+    <!-- Speed -->
     
     <TextView
         android:id="@+id/climb_speed"
@@ -111,15 +121,24 @@
         android:layout_alignLeft="@+id/batt_remain"
         android:layout_below="@+id/batt_remain"
         android:text="@string/batt_current" />
-    
+
     <Button
-        android:id="@+id/connectButton"
+        android:id="@+id/wpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="19dp"
-        android:onClick="onButtonRequest"
+        android:onClick="onWpButtonRequest"
+        android:text="@string/wp_button" />
+
+    <Button
+        android:id="@+id/connectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/wpButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:onClick="onConnectButtonRequest"
         android:text="@string/connect_button" />
-    
 </RelativeLayout>

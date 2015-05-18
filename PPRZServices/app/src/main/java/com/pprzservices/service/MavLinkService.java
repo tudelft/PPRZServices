@@ -57,7 +57,7 @@ public class MavLinkService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-    	return mMavLinkServiceClient;    			
+        return mMavLinkServiceClient;
     }
 
     void connectMavConnection(ConnectionParameter connParams,

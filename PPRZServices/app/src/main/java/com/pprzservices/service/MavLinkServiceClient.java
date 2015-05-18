@@ -128,6 +128,8 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 	@Override
 	public void addEventListener(String id, IEventListener listener)
 			throws RemoteException {
+		Log.d(TAG, "Adding event listener...");
+
 		mListeners.put(id, listener);
 	}
 
@@ -138,6 +140,8 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 	
 	@Override
     public void connectDroneClient(ConnectionParameter connParams) throws RemoteException  {
+		Log.d(TAG, "Connecting to Drone client...");
+
         if (connParams == null)
             return;
 
@@ -160,4 +164,9 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			listener.onEvent(type);
 		}
 	}
+//
+//	@Override
+//	public void requestWpList() {
+//		mDroneClient.requestWpList();
+//	}
 }

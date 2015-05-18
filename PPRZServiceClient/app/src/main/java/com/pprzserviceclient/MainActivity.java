@@ -35,6 +35,8 @@ public class MainActivity extends Activity {
 	
 	private Button connectButton;
 	private boolean isConnected;
+
+	private TextView serviceConn;
 	
 	private TextView altitude;
 	
@@ -63,12 +65,19 @@ public class MainActivity extends Activity {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder serviceClient) {
 			mServiceClient = IMavLinkServiceClient.Stub.asInterface(serviceClient);
+
+			if (mServiceClient == null)
+				Log.d(TAG, "mServiceClient is null");
+
 			try {
 				mServiceClient.addEventListener(TAG, listener);
+
+				Log.d(TAG, "Listener has been added");
+
 			} catch (RemoteException e) {
 				Log.e(TAG, "Failed to add listener", e);
 			}
-			Log.i(TAG, "Service connection established.");
+			serviceConn.setText(getString(R.string.service_connection) + " yes");
 		}
 		
         @Override
@@ -142,7 +151,9 @@ public class MainActivity extends Activity {
 		
 		connectButton = (Button) findViewById(R.id.connectButton);
 		isConnected = false;
-		
+
+		serviceConn = (TextView) findViewById(R.id.service_connection);
+
 		altitude = (TextView) findViewById(R.id.altitude);
 		
 		targetAltitude = (TextView) findViewById(R.id.target_altitude);
@@ -191,7 +202,15 @@ public class MainActivity extends Activity {
         super.onStart();
         
         Intent intent = new Intent(IMavLinkServiceClient.class.getName());
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+		Log.d(TAG, "intent: " + intent.getAction());
+        if (!bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)) {
+
+			// TODO: Handle service not binding problems
+
+			Log.e(TAG, "The service could not be bound");
+		} else {
+			Log.d(TAG, "Service was bound");
+		}
     }
     
     @Override
@@ -208,7 +227,7 @@ public class MainActivity extends Activity {
 		
 		/* TODO: Fetch connection type */
 		
-        final int connectionType = 1; // UDP connection
+        final int connectionType = 0; // UDP connection
         
         /* TODO: Fetch server port */
         
@@ -218,7 +237,6 @@ public class MainActivity extends Activity {
 
         ConnectionParameter connParams;
         switch (connectionType) {
-
             case 0:
                 extraParams.putInt("udp_port", serverPort);
                 connParams = new ConnectionParameter(connectionType, extraParams);
@@ -240,6 +258,8 @@ public class MainActivity extends Activity {
         final ConnectionParameter connParams = retrieveConnectionParameters();
         if (!(connParams == null)) {
 	        try {
+				Log.d(TAG, "This action is performed");
+
 	        	mServiceClient.connectDroneClient(connParams);
 	        } catch (RemoteException e) {
 	            /* TODO: Handle remote exception */
@@ -250,10 +270,8 @@ public class MainActivity extends Activity {
         
     }
 	
-    public void onButtonRequest(View view) {
+    public void onConnectButtonRequest(View view) {
     	if (!isConnected) {
-			Log.d(TAG, "This method is invoked");
-
 			connectToDroneClient();
 		} else {
 			try {
@@ -263,6 +281,16 @@ public class MainActivity extends Activity {
 			}
 		}
     }
+
+	public void onWpButtonRequest(View view) {
+//		if (isConnected) {
+//			try {
+//				mServiceClient.requestWpList();
+//			} catch (RemoteException e) {
+//				// TODO: Handle exception
+//			}
+//		}
+	}
     
     /**
      * This runnable object is created such that the update is performed

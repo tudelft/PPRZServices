@@ -19,18 +19,20 @@ public class MavLinkMsgHandler {
 
     private DroneClient mDroneClient;
 
-    private WaypointProtocol missionProtocol;
+    //private WaypointProtocol waypointProtocol;
+
+    // TODO: Fix waypoint protocol error
 
     public MavLinkMsgHandler(DroneClient droneClient) {
         mDroneClient = droneClient;
 
-        missionProtocol = new WaypointProtocol(mDroneClient);
+        //waypointProtocol = new WaypointProtocol(mDroneClient);
     }
 
     public void receiveData(MAVLinkMessage msg)
     {
         // Handle any message that might contain mission data
-        missionProtocol.waypointMsgHandler(msg);
+        //waypointProtocol.waypointMsgHandler(msg);
 
         switch (msg.msgid) {
 	        case msg_attitude.MAVLINK_MSG_ID_ATTITUDE: {
@@ -101,4 +103,8 @@ public class MavLinkMsgHandler {
         mDroneClient.getDrone().getState().setArmed(
                 (msg_heart.base_mode & (byte) MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED) == (byte) MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED);
     }
+
+//    public void requestWpList() {
+//        waypointProtocol.requestList();
+//    }
 }

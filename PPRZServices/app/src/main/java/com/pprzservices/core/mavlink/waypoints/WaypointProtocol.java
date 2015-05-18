@@ -10,7 +10,7 @@ import com.MAVLink.common.msg_mission_item;
 import com.MAVLink.common.msg_mission_request;
 import com.MAVLink.common.msg_mission_request_list;
 import com.MAVLink.enums.MAV_MISSION_RESULT;
-import com.pprzservices.core.drone.Drone;
+import com.aidllib.core.mavlink.waypoints.Waypoint;
 import com.pprzservices.core.drone.DroneClient;
 import com.pprzservices.service.MavLinkService;
 
@@ -46,7 +46,7 @@ public class WaypointProtocol {
     // Number of waypoints receiver from the MAV
     private short count = 0;
     
-    private List<Waypoint> waypoints = new ArrayList<Waypoint>();
+    private List<Waypoint> mWaypoints = new ArrayList<Waypoint>();
     
     DroneClient mClient; 
     
@@ -64,21 +64,24 @@ public class WaypointProtocol {
      */
     public void waypointMsgHandler(MAVLinkMessage msg) {
     	switch (state) {
-    		case STATE_IDLE: {   			
-    			break;
+    		case STATE_IDLE: {
+				break;
     		}
     		
     		case STATE_REQUEST_LIST: {
+
+				Log.d(TAG, "Request list message received!");
+
     			if (msg.msgid == msg_mission_count.MAVLINK_MSG_ID_MISSION_COUNT) {
     				// Store the number of waypoints
                     count = ((msg_mission_count) msg).count;
                     
                     // Clear the current list (if any waypoints are present)
-                    waypoints.clear();
+					mWaypoints.clear();
                     
                     // Request the first waypoint
                     if (count > 0) {
-                    	requestWp((short)waypoints.size());
+                    	requestWp((short)mWaypoints.size());
                     
                     	// Start the timeout thread
                     	startTimeoutThread();
@@ -88,16 +91,19 @@ public class WaypointProtocol {
     		}
     		
     		case STATE_REQUEST_WP: {
+
+				Log.d(TAG, "Request wp message received!");
+
     			if (msg.msgid == msg_mission_item.MAVLINK_MSG_ID_MISSION_ITEM) {
     				stopTimeoutThread();
     				
     				// Add the received waypoint to the list of waypoints
     				msg_mission_item item = (msg_mission_item) msg;
-    				waypoints.add(new Waypoint(item.x, item.y, item.z, item.seq, item.target_system, item.target_component));
+					mWaypoints.add(new Waypoint(item.x, item.y, item.z, item.seq, item.target_system, item.target_component));
     				
-    				if (waypoints.size() < count) {
+    				if (mWaypoints.size() < count) {
     					// Request next waypoint
-    					requestWp((short)waypoints.size());
+    					requestWp((short)mWaypoints.size());
     					startTimeoutThread();
                     } else {
                         // Set state to idle

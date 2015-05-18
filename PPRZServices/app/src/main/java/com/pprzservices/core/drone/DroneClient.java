@@ -108,4 +108,8 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
         	/* TODO: Handle remote exception */
         }
 	}
+
+//    public void requestWpList() {
+//        mavLinkMsgHandler.requestWpList();
+//    }
 }
