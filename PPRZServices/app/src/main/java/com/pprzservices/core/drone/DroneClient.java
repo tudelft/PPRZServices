@@ -1,6 +1,7 @@
 package com.pprzservices.core.drone;
 
 import android.content.Context;
+import android.os.Handler;
 import android.os.RemoteException;
 
 import com.MAVLink.MAVLinkPacket;
@@ -36,7 +37,10 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
         this.context = context;
         this.connParams = connParams;
         this.drone = new Drone(this);
-        this.mavLinkMsgHandler = new MavLinkMsgHandler(this);
+
+        // The handler grabs hold of the main service looper
+        this.mavLinkMsgHandler = new MavLinkMsgHandler(this, new Handler(context.getMainLooper()));
+
         this.mServiceClient = serviceClient;
         
         mavLinkClient = new MavLinkClient(context, this, connParams, mServiceClient);
@@ -109,7 +113,7 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
         }
 	}
 
-//    public void requestWpList() {
-//        mavLinkMsgHandler.requestWpList();
-//    }
+    public void requestWpList() {
+        mavLinkMsgHandler.requestWpList();
+    }
 }

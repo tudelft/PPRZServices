@@ -1,5 +1,7 @@
 package com.pprzservices.core.mavlink;
 
+import android.os.Handler;
+
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.common.msg_attitude;
 import com.MAVLink.common.msg_battery_status;
@@ -19,20 +21,25 @@ public class MavLinkMsgHandler {
 
     private DroneClient mDroneClient;
 
-    //private WaypointProtocol waypointProtocol;
+    // Pass the service handler
+    private Handler mHandler;
+
+    private WaypointProtocol mWaypointProtocol;
 
     // TODO: Fix waypoint protocol error
 
-    public MavLinkMsgHandler(DroneClient droneClient) {
+    public MavLinkMsgHandler(DroneClient droneClient, Handler handler) {
         mDroneClient = droneClient;
 
-        //waypointProtocol = new WaypointProtocol(mDroneClient);
+        mHandler = handler;
+
+        mWaypointProtocol = new WaypointProtocol(mDroneClient, mHandler);
     }
 
     public void receiveData(MAVLinkMessage msg)
     {
         // Handle any message that might contain mission data
-        //waypointProtocol.waypointMsgHandler(msg);
+        mWaypointProtocol.waypointMsgHandler(msg);
 
         switch (msg.msgid) {
 	        case msg_attitude.MAVLINK_MSG_ID_ATTITUDE: {
@@ -104,7 +111,7 @@ public class MavLinkMsgHandler {
                 (msg_heart.base_mode & (byte) MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED) == (byte) MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED);
     }
 
-//    public void requestWpList() {
-//        waypointProtocol.requestList();
-//    }
+    public void requestWpList() {
+        mWaypointProtocol.requestWpList();
+    }
 }

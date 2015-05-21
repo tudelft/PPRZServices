@@ -47,9 +47,12 @@ public class UdpConnection extends MavLinkConnection {
     @Override
     public final void sendBuffer(byte[] buffer) throws IOException {
         try {
-            /* Data transmission is possible if and only if a packet has first been received */
+            // Data transmission is only possible upon receiving the first heartbeat
             if (hostAdd != null) {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, hostAdd, hostPort);
+
+                Log.d(TAG, "Send buffer...");
+
                 socket.send(packet);
             }
         } catch (Exception e) {

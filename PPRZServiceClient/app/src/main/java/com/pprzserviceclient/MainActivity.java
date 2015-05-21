@@ -200,9 +200,10 @@ public class MainActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        
-        Intent intent = new Intent(IMavLinkServiceClient.class.getName());
-		Log.d(TAG, "intent: " + intent.getAction());
+
+		ComponentName componentName = new ComponentName("com.pprzservices", "com.pprzservices.service.MavLinkService");
+        Intent intent = new Intent();
+		intent.setComponent(componentName);
         if (!bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)) {
 
 			// TODO: Handle service not binding problems
@@ -258,8 +259,6 @@ public class MainActivity extends Activity {
         final ConnectionParameter connParams = retrieveConnectionParameters();
         if (!(connParams == null)) {
 	        try {
-				Log.d(TAG, "This action is performed");
-
 	        	mServiceClient.connectDroneClient(connParams);
 	        } catch (RemoteException e) {
 	            /* TODO: Handle remote exception */
@@ -283,13 +282,13 @@ public class MainActivity extends Activity {
     }
 
 	public void onWpButtonRequest(View view) {
-//		if (isConnected) {
-//			try {
-//				mServiceClient.requestWpList();
-//			} catch (RemoteException e) {
-//				// TODO: Handle exception
-//			}
-//		}
+		if (isConnected) {
+			try {
+				mServiceClient.requestWpList();
+			} catch (RemoteException e) {
+				// TODO: Handle exception
+			}
+		}
 	}
     
     /**

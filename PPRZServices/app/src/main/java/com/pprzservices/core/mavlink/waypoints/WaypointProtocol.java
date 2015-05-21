@@ -49,14 +49,14 @@ public class WaypointProtocol {
     private List<Waypoint> mWaypoints = new ArrayList<Waypoint>();
     
     DroneClient mClient; 
-    
+
+	// Pass the service handler
     Handler mHandler;
     
-    public WaypointProtocol(DroneClient client) {
+    public WaypointProtocol(DroneClient client, Handler handler) {
     	this.mClient = client;
 
-		// The handler grabs hold of the service looper
-    	this.mHandler = new Handler();
+    	this.mHandler = handler;
     }
     
     /**
@@ -69,13 +69,15 @@ public class WaypointProtocol {
     		}
     		
     		case STATE_REQUEST_LIST: {
-
-				Log.d(TAG, "Request list message received!");
-
     			if (msg.msgid == msg_mission_count.MAVLINK_MSG_ID_MISSION_COUNT) {
+					// Stop the timeout thread
+					stopTimeoutThread();
+
     				// Store the number of waypoints
                     count = ((msg_mission_count) msg).count;
-                    
+
+					Log.d(TAG, "Mission count: " + count);
+
                     // Clear the current list (if any waypoints are present)
 					mWaypoints.clear();
                     
@@ -91,11 +93,9 @@ public class WaypointProtocol {
     		}
     		
     		case STATE_REQUEST_WP: {
-
-				Log.d(TAG, "Request wp message received!");
-
     			if (msg.msgid == msg_mission_item.MAVLINK_MSG_ID_MISSION_ITEM) {
-    				stopTimeoutThread();
+					// Stop the timeout thread
+					stopTimeoutThread();
     				
     				// Add the received waypoint to the list of waypoints
     				msg_mission_item item = (msg_mission_item) msg;
@@ -138,19 +138,22 @@ public class WaypointProtocol {
     /** 
      * Request list of waypoints
      */
-    public void requestList() {
+    public void requestWpList() {
     	// Only request list if the state of the state machine is STATE_IDLE
     	if (state != StateMachine.STATE_IDLE)
     		return;
     	
     	state = StateMachine.STATE_REQUEST_LIST;
-    	sendRequestList();
+    	sendRequestWpList();
+
+		// Start the timeout thread
+		startTimeoutThread();
     }
     
     /**
      * Send request for a list of waypoints 
      */
-    public void sendRequestList() {
+    public void sendRequestWpList() {
     	msg_mission_request_list msg = new msg_mission_request_list();
 		msg.target_system = mClient.getDrone().getSysid();
 		msg.target_component = mClient.getDrone().getCompid();

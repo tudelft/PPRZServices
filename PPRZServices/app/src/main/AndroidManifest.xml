@@ -34,12 +34,7 @@
         </activity>
 
         <service android:name="com.pprzservices.service.MavLinkService"
-            android:process=":remote"
-            android:exported="true"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="com.aidllib.IMavLinkServiceClient" />
-            </intent-filter>
+            android:exported="true">
         </service>
 
     </application>

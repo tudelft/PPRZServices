@@ -15,4 +15,6 @@ interface IMavLinkServiceClient {
     void disconnectDroneClient();
 
     void onEvent(String type);
+
+    void requestWpList();
 }

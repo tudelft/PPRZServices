@@ -164,9 +164,9 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			listener.onEvent(type);
 		}
 	}
-//
-//	@Override
-//	public void requestWpList() {
-//		mDroneClient.requestWpList();
-//	}
+
+	@Override
+	public void requestWpList() {
+		mDroneClient.requestWpList();
+	}
 }

@@ -163,8 +163,6 @@ public abstract class MavLinkConnection {
             mConnectThread.start();
             reportConnecting(listener);
         }
-        
-        
     }
 
     protected void onConnectionOpened(MavLinkConnectionListener listener) {
@@ -173,6 +171,9 @@ public abstract class MavLinkConnection {
             Log.d(TAG, "Created 'Client' thread");
             mTaskThread.start();
         }
+
+
+
     }
 
     protected void onConnectionFailed(String errMsg, MavLinkConnectionListener listener) {
