@@ -8,6 +8,7 @@ import com.MAVLink.MAVLinkPacket;
 import com.aidllib.IEventListener;
 import com.aidllib.IMavLinkServiceClient;
 import com.aidllib.core.ConnectionParameter;
+import com.aidllib.core.mavlink.waypoints.Waypoint;
 import com.aidllib.core.model.Altitude;
 import com.aidllib.core.model.Attitude;
 import com.aidllib.core.model.Battery;
@@ -20,6 +21,8 @@ import com.pprzservices.core.mavlink.connection.MavLinkConnection;
 import com.pprzservices.core.mavlink.connection.MavLinkConnectionListener;
 
 import java.lang.ref.SoftReference;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -116,6 +119,11 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			
 			case "POSITION": {
 				carrier.putParcelable(type, new Position(drone.getSatVisible(), drone.getTimeStamp(), drone.getLat(), drone.getLon(), drone.getAlt(), drone.getHdg()));
+				break;
+			}
+
+			case "WAYPOINT": {
+				break;
 			}
 			
 			default:
@@ -168,5 +176,10 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 	@Override
 	public void requestWpList() {
 		mDroneClient.requestWpList();
+	}
+
+	@Override
+	public List<Waypoint> getWpList() {
+		return mDroneClient.getWaypoints();
 	}
 }

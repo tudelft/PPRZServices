@@ -122,6 +122,14 @@
         android:layout_below="@+id/batt_remain"
         android:text="@string/batt_current" />
 
+    <TextView
+        android:id="@+id/waypoint_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/batt_current"
+        android:layout_below="@+id/batt_current"
+        android:text="@string/waypoint_count" />
+
     <Button
         android:id="@+id/wpButton"
         android:layout_width="wrap_content"

@@ -12,6 +12,7 @@ import com.MAVLink.common.msg_mission_request_list;
 import com.MAVLink.enums.MAV_MISSION_RESULT;
 import com.aidllib.core.mavlink.waypoints.Waypoint;
 import com.pprzservices.core.drone.DroneClient;
+import com.pprzservices.core.drone.DroneInterfaces;
 import com.pprzservices.service.MavLinkService;
 
 import android.os.Handler;
@@ -40,12 +41,13 @@ public class WaypointProtocol {
 	
 	// Number of retries
     private static final int RETRIES = 3;
-    
-    private int nRetries = 0;
+
+	// Create a thread-safe retry counter
+	private int nRetries = 0;
     
     // Number of waypoints receiver from the MAV
     private short count = 0;
-    
+
     private List<Waypoint> mWaypoints = new ArrayList<Waypoint>();
     
     DroneClient mClient; 
@@ -58,7 +60,11 @@ public class WaypointProtocol {
 
     	this.mHandler = handler;
     }
-    
+
+	public List<Waypoint> getWaypoints() {
+		return mWaypoints;
+	}
+
     /**
      * Waypoint message handler
      */
@@ -71,7 +77,8 @@ public class WaypointProtocol {
     		case STATE_REQUEST_LIST: {
     			if (msg.msgid == msg_mission_count.MAVLINK_MSG_ID_MISSION_COUNT) {
 					// Stop the timeout thread
-					stopTimeoutThread();
+					stopTimeoutThread(new TimeoutRequestTimer());
+					nRetries = 0;
 
     				// Store the number of waypoints
                     count = ((msg_mission_count) msg).count;
@@ -86,7 +93,7 @@ public class WaypointProtocol {
                     	requestWp((short)mWaypoints.size());
                     
                     	// Start the timeout thread
-                    	startTimeoutThread();
+                    	startTimeoutThread(new TimeoutRequestTimer((short)mWaypoints.size()));
                     }
                 }
     			break;
@@ -95,8 +102,9 @@ public class WaypointProtocol {
     		case STATE_REQUEST_WP: {
     			if (msg.msgid == msg_mission_item.MAVLINK_MSG_ID_MISSION_ITEM) {
 					// Stop the timeout thread
-					stopTimeoutThread();
-    				
+					stopTimeoutThread(new TimeoutRequestTimer((short)mWaypoints.size()));
+    				nRetries = 0;
+
     				// Add the received waypoint to the list of waypoints
     				msg_mission_item item = (msg_mission_item) msg;
 					mWaypoints.add(new Waypoint(item.x, item.y, item.z, item.seq, item.target_system, item.target_component));
@@ -104,13 +112,21 @@ public class WaypointProtocol {
     				if (mWaypoints.size() < count) {
     					// Request next waypoint
     					requestWp((short)mWaypoints.size());
-    					startTimeoutThread();
+
+						// Start the timeout thread
+						startTimeoutThread(new TimeoutRequestTimer((short)mWaypoints.size()));
                     } else {
                         // Set state to idle
                     	state = StateMachine.STATE_IDLE;
                         
                         // Send acknowledgement
                     	sendAck();
+
+						// Notify the drone client that the list of waypoints is updated
+						mClient.onDroneEvent(DroneInterfaces.DroneEventsType.WAYPOINTS_UPDATED);
+
+						// TODO: Currently changing a single waypoints implies reloading the entire list
+
                     }
     			}
     			break;
@@ -147,7 +163,7 @@ public class WaypointProtocol {
     	sendRequestWpList();
 
 		// Start the timeout thread
-		startTimeoutThread();
+		startTimeoutThread(new TimeoutRequestTimer());
     }
     
     /**
@@ -180,27 +196,66 @@ public class WaypointProtocol {
     }
 
     /**
-     * Post timeout runnable according to Handler documentation
+     * Timeout runnable according to Handler documentation, which handles retries or timeouts
      */
-    private final Runnable timeoutRequest = new Runnable() {
-        @Override
-        public void run() {
-        	Log.d(TAG, "The request timed-out!");
-        }
-    };
- 
+	private class TimeoutRequestTimer implements Runnable {
+		private short mSeq;
+
+		public TimeoutRequestTimer() {mSeq = 0;}
+
+		public TimeoutRequestTimer(short seq) {
+			mSeq = seq;
+		}
+
+		@Override
+		public void run() {
+			if (nRetries++ < RETRIES) {
+				switch(state) {
+					case STATE_REQUEST_LIST: {
+
+						Log.d(TAG, "Retrying to request list of waypoints... (" + nRetries + ")");
+
+						// Request the list of waypoints
+						sendRequestWpList();
+
+						// Start the timeout thread
+						startTimeoutThread(new TimeoutRequestTimer());
+
+						break;
+					}
+
+					case STATE_REQUEST_WP: {
+
+						Log.d(TAG, "Retrying to request waypoint... (" + nRetries + ")");
+
+						// Request next waypoint
+						requestWp((short) mWaypoints.size());
+
+						// Start the timeout thread
+						startTimeoutThread(new TimeoutRequestTimer((short)mWaypoints.size()));
+
+						break;
+					}
+				}
+			} else {
+				state = StateMachine.STATE_IDLE;
+				nRetries = 0;
+			}
+		}
+	}
+
     /**
      * Start timeout thread
      */
-    public void startTimeoutThread() {
-    	mHandler.postDelayed(timeoutRequest, TIMEOUT);
+    public void startTimeoutThread(TimeoutRequestTimer timeoutRequestTimer) {
+    	mHandler.postDelayed(timeoutRequestTimer, TIMEOUT);
     }
     
     /**
      * Stop timeout thread
      */
-    public void stopTimeoutThread() {
-    	mHandler.removeCallbacks(timeoutRequest);
+    public void stopTimeoutThread(TimeoutRequestTimer timeoutRequestTimer) {
+    	mHandler.removeCallbacks(timeoutRequestTimer);
     }
     
     /**

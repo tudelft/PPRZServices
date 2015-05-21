@@ -25,4 +25,6 @@
     <string name="batt_volt">batt_volt:</string>
     <string name="batt_remain">batt_remain:</string>
     <string name="batt_current">batt_current:</string>
+
+    <string name="waypoint_count">WP count:</string>
 </resources>

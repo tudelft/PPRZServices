@@ -11,7 +11,6 @@ import com.MAVLink.common.msg_heartbeat;
 import com.MAVLink.common.msg_vfr_hud;
 import com.MAVLink.enums.MAV_MODE_FLAG;
 import com.MAVLink.enums.MAV_STATE;
-import com.pprzservices.core.drone.Drone;
 import com.pprzservices.core.drone.DroneClient;
 import com.pprzservices.core.mavlink.waypoints.WaypointProtocol;
 
@@ -34,6 +33,10 @@ public class MavLinkMsgHandler {
         mHandler = handler;
 
         mWaypointProtocol = new WaypointProtocol(mDroneClient, mHandler);
+    }
+
+    public WaypointProtocol getWaypointProtocol() {
+        return mWaypointProtocol;
     }
 
     public void receiveData(MAVLinkMessage msg)

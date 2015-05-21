@@ -1,72 +1,109 @@
 package com.aidllib.core.mavlink.waypoints;
 
-public class Waypoint {
-	private float lat;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Waypoint implements Parcelable {
+	private float mLat;
 	
-	private float lon;
+	private float mLon;
 	
-	private float alt;
+	private float mAlt;
 	
-	private short seq; // WP index
+	private int mSeq; // WP index
 	
-	private byte targetSys;
+	private byte mTargetSys;
 	
-	private byte targetComp;
+	private byte mTargetComp;
 	
-	public Waypoint(float lat, float lon, float alt, short seq, byte targetSys, byte targetComp) {
-		this.lat = lat;
-		this.lon = lon;
-		this.alt = alt;
-		this.seq = seq;
-		this.targetSys = targetSys;
-		this.targetComp = targetComp;
+	public Waypoint(float lat, float lon, float alt, int seq, byte targetSys, byte targetComp) {
+		mLat = lat;
+		mLon = lon;
+		mAlt = alt;
+		mSeq = seq;
+		mTargetSys = targetSys;
+		mTargetComp = targetComp;
+	}
+
+	public Waypoint(Parcel in) {
+		mLat = in.readFloat();
+		mLon = in.readFloat();
+		mAlt = in.readFloat();
+		mSeq = in.readInt();
+		mTargetSys = in.readByte();
+		mTargetComp = in.readByte();
 	}
 	
 	public void setLat(float lat) {
-		this.lat = lat;
+		mLat = lat;
 	}
 	
 	public void setLon(float lon) {
-		this.lon = lon;
+		mLon = lon;
 	}
 	
 	public void setAlt(float alt) {
-		this.alt = alt;
+		mAlt = alt;
 	}
 	
 	public void setSeq(short seq) {
-		this.seq = seq;
+		mSeq = seq;
 	}
 	
 	public void setTargetSys(byte targetSys) {
-		this.targetSys = targetSys;
+		mTargetSys = targetSys;
 	}
 	
 	public void setTargetComp(byte targetComp) {
-		this.targetComp = targetComp;
+		mTargetComp = targetComp;
 	}
 	
 	public float getLat() {
-		return this.lat;
+		return mLat;
 	}
 	
 	public float getLon() {
-		return this.lon;
+		return mLon;
 	}
 	
 	public float getAlt() {
-		return this.alt;
+		return mAlt;
 	}
 	
-	public short getSeq() {
-		return this.seq;
+	public int getSeq() {
+		return mSeq;
 	}
 	
 	public byte getTargetSys() {
-		return this.targetSys;
+		return mTargetSys;
 	}
 	
 	public byte getTargetComp() {
-		return this.targetComp;
+		return mTargetComp;
 	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeFloat(mLat);
+		dest.writeFloat(mLon);
+		dest.writeFloat(mAlt);
+		dest.writeInt(mSeq);
+		dest.writeByte(mTargetSys);
+		dest.writeByte(mTargetComp);
+	}
+
+	public static final Parcelable.Creator<Waypoint> CREATOR = new Parcelable.Creator<Waypoint>() {
+		public Waypoint createFromParcel(Parcel source) {
+			return new Waypoint(source);
+		}
+
+		public Waypoint[] newArray(int size) {
+			return new Waypoint[size];
+		}
+	};
 }

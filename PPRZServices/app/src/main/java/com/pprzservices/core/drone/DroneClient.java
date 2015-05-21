@@ -7,13 +7,15 @@ import android.os.RemoteException;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.aidllib.core.ConnectionParameter;
-import com.pprzservices.core.drone.DroneInterfaces;
+import com.aidllib.core.mavlink.waypoints.Waypoint;
 import com.pprzservices.core.drone.DroneInterfaces.DroneEventsType;
 import com.pprzservices.core.drone.DroneInterfaces.OnDroneListener;
 import com.pprzservices.core.mavlink.MavLinkClient;
 import com.pprzservices.core.mavlink.MavLinkMsgHandler;
 import com.pprzservices.core.mavlink.MavLinkStreams;
 import com.pprzservices.service.MavLinkServiceClient;
+
+import java.util.List;
 
 /**
  * DroneClient.java
@@ -115,5 +117,9 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
 
     public void requestWpList() {
         mavLinkMsgHandler.requestWpList();
+    }
+
+    public List<Waypoint> getWaypoints() {
+        return mavLinkMsgHandler.getWaypointProtocol().getWaypoints();
     }
 }

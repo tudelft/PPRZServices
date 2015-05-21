@@ -3,6 +3,7 @@ package com.pprzserviceclient;
 import com.aidllib.IEventListener;
 import com.aidllib.IMavLinkServiceClient;
 import com.aidllib.core.ConnectionParameter;
+import com.aidllib.core.mavlink.waypoints.Waypoint;
 import com.aidllib.core.model.Altitude;
 import com.aidllib.core.model.Attitude;
 import com.aidllib.core.model.Heartbeat;
@@ -24,6 +25,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -54,7 +57,9 @@ public class MainActivity extends Activity {
 	
 	private TextView pitch;
 	
-	private TextView  yaw;
+	private TextView yaw;
+
+	private TextView wpCount;
 
 	Intent intent;
 	
@@ -135,6 +140,11 @@ public class MainActivity extends Activity {
 	    		case "SATELLITES_VISIBLE_UPDATED": {
 	    			break;
 	    		}
+
+				case "WAYPOINTS_UPDATED": {
+					updateWaypoints();
+					break;
+				}
 	    		
 	    		default:
 	    			break;
@@ -171,6 +181,8 @@ public class MainActivity extends Activity {
 		pitch = (TextView) findViewById(R.id.pitch);
 		
 		yaw = (TextView) findViewById(R.id.yaw);
+
+		wpCount = (TextView) findViewById(R.id.waypoint_count);
 	}
 
 	@Override
@@ -430,5 +442,20 @@ public class MainActivity extends Activity {
 				return null;
 		}
 	 }
+
+	private void updateWaypoints() {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					List<Waypoint> waypoints = mServiceClient.getWpList();
+					wpCount.setText(getString(R.string.waypoint_count) + " " + String.format("%d", waypoints.size()));
+				} catch (RemoteException e) {
+					// TODO: Handle exception
+				}
+			}
+		});
+
+	}
 }
 

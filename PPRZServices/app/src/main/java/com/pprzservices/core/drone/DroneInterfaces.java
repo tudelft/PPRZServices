@@ -40,7 +40,10 @@ public class DroneInterfaces {
         POSITION_UPDATED,
         
         // Number of satellites updated
-        SATELLITES_VISIBLE_UPDATED
+        SATELLITES_VISIBLE_UPDATED,
+
+        // List of waypoints updated
+        WAYPOINTS_UPDATED
     }
 
     public interface OnDroneListener {
