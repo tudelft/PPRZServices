@@ -3,12 +3,12 @@ package com.MAVLink;
         import java.io.Serializable;
         import com.MAVLink.Messages.MAVLinkPayload;
        	import com.MAVLink.Messages.MAVLinkMessage;
-//     	  import com.ardupilotmega.CRC;
+     	import com.MAVLink.paparazzi.CRC;
         import com.MAVLink.common.*;
-//        import com.ardupilotmega.*;
+        import com.MAVLink.paparazzi.*;
         
         /**
-        * Common interfaces for all MAVLink Messages
+        * Common interface for all MAVLink Messages
         * Packet Anatomy
         * This is the anatomy of one packet. It is inspired by the CAN and SAE AS-4 standards.
         
@@ -128,7 +128,16 @@ package com.MAVLink;
         */
         public MAVLinkMessage unpack() {
 		switch (msgid) {
-                    		case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT:
+                    		case msg_block_item.MAVLINK_MSG_ID_BLOCK_ITEM:
+			return  new msg_block_item(this);
+            		case msg_block_request.MAVLINK_MSG_ID_BLOCK_REQUEST:
+			return  new msg_block_request(this);
+            		case msg_block_request_list.MAVLINK_MSG_ID_BLOCK_REQUEST_LIST:
+			return  new msg_block_request_list(this);
+            		case msg_block_count.MAVLINK_MSG_ID_BLOCK_COUNT:
+			return  new msg_block_count(this);
+            
+                        		case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT:
 			return  new msg_heartbeat(this);
             		case msg_sys_status.MAVLINK_MSG_ID_SYS_STATUS:
 			return  new msg_sys_status(this);

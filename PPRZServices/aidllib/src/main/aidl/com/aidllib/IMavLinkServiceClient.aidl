@@ -21,4 +21,8 @@ interface IMavLinkServiceClient {
     void requestWpList();
 
     List<Waypoint> getWpList();
+
+    void requestMissionBlockList();
+
+    List<String> getMissionBlockList();
 }

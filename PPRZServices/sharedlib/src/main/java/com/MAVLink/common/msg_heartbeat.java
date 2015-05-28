@@ -6,7 +6,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         //import android.util.Log;
         
         /**
-        * The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interfaces based on the autopilot).
+        * The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).
         */
         public class msg_heartbeat extends MAVLinkMessage{
         

@@ -116,10 +116,18 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
 	}
 
     public void requestWpList() {
-        mavLinkMsgHandler.requestWpList();
+        mavLinkMsgHandler.getWaypointProtocol().requestWpList();
     }
 
     public List<Waypoint> getWaypoints() {
         return mavLinkMsgHandler.getWaypointProtocol().getWaypoints();
+    }
+
+    public void requestMissionBlockList() {
+        mavLinkMsgHandler.getWaypointProtocol().requestBlockList();
+    }
+
+    public List<String> getMissionBlocks() {
+        return mavLinkMsgHandler.getWaypointProtocol().getBlocks();
     }
 }

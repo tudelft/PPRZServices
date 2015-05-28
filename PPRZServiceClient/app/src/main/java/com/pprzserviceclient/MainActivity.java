@@ -26,6 +26,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class MainActivity extends Activity {
@@ -60,6 +62,8 @@ public class MainActivity extends Activity {
 	private TextView yaw;
 
 	private TextView wpCount;
+
+	private TextView blockCount;
 
 	Intent intent;
 	
@@ -145,7 +149,12 @@ public class MainActivity extends Activity {
 					updateWaypoints();
 					break;
 				}
-	    		
+
+				case "MISSION_BLOCKS_UPDATED": {
+					updateMissionBlocks();
+					break;
+				}
+
 	    		default:
 	    			break;
     		}
@@ -183,6 +192,8 @@ public class MainActivity extends Activity {
 		yaw = (TextView) findViewById(R.id.yaw);
 
 		wpCount = (TextView) findViewById(R.id.waypoint_count);
+
+		blockCount = (TextView) findViewById(R.id.block_count);
 	}
 
 	@Override
@@ -302,8 +313,19 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
-    
-    /**
+
+	public void onBlockButtonRequest(View view) {
+		if (isConnected) {
+			try {
+				mServiceClient.requestMissionBlockList();
+			} catch (RemoteException e) {
+				// TODO: Handle exception
+			}
+		}
+	}
+
+
+	/**
      * This runnable object is created such that the update is performed
      * by the UI handler. This is a design requirement posed by the Android SDK
      */
@@ -455,7 +477,20 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
+	}
 
+	private void updateMissionBlocks() {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					List<String> blocks = mServiceClient.getMissionBlockList();
+					blockCount.setText(getString(R.string.block_count) + " " + String.format("%d", blocks.size()));
+				} catch (RemoteException e) {
+					// TODO: Handle exception
+				}
+			}
+		});
 	}
 }
 

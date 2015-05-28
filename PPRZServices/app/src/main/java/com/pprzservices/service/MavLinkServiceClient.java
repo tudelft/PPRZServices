@@ -182,4 +182,14 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 	public List<Waypoint> getWpList() {
 		return mDroneClient.getWaypoints();
 	}
+
+	@Override
+	public void requestMissionBlockList() {
+		mDroneClient.requestMissionBlockList();
+	}
+
+	@Override
+	public List<String> getMissionBlockList() {
+		return mDroneClient.getMissionBlocks();
+	}
 }

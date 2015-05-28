@@ -12,7 +12,7 @@ import com.MAVLink.common.msg_vfr_hud;
 import com.MAVLink.enums.MAV_MODE_FLAG;
 import com.MAVLink.enums.MAV_STATE;
 import com.pprzservices.core.drone.DroneClient;
-import com.pprzservices.core.mavlink.waypoints.WaypointProtocol;
+import com.pprzservices.core.mavlink.waypoints.WaypointClient;
 
 public class MavLinkMsgHandler {
 
@@ -23,7 +23,7 @@ public class MavLinkMsgHandler {
     // Pass the service handler
     private Handler mHandler;
 
-    private WaypointProtocol mWaypointProtocol;
+    private WaypointClient mWaypointClient;
 
     // TODO: Fix waypoint protocol error
 
@@ -32,17 +32,17 @@ public class MavLinkMsgHandler {
 
         mHandler = handler;
 
-        mWaypointProtocol = new WaypointProtocol(mDroneClient, mHandler);
+        mWaypointClient = new WaypointClient(mDroneClient, mHandler);
     }
 
-    public WaypointProtocol getWaypointProtocol() {
-        return mWaypointProtocol;
+    public WaypointClient getWaypointProtocol() {
+        return mWaypointClient;
     }
 
     public void receiveData(MAVLinkMessage msg)
     {
         // Handle any message that might contain mission data
-        mWaypointProtocol.waypointMsgHandler(msg);
+        mWaypointClient.waypointMsgHandler(msg);
 
         switch (msg.msgid) {
 	        case msg_attitude.MAVLINK_MSG_ID_ATTITUDE: {
@@ -112,9 +112,5 @@ public class MavLinkMsgHandler {
     private void checkArmState(msg_heartbeat msg_heart) {
         mDroneClient.getDrone().getState().setArmed(
                 (msg_heart.base_mode & (byte) MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED) == (byte) MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED);
-    }
-
-    public void requestWpList() {
-        mWaypointProtocol.requestWpList();
     }
 }
