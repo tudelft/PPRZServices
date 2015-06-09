@@ -12,7 +12,8 @@ import com.MAVLink.common.msg_vfr_hud;
 import com.MAVLink.enums.MAV_MODE_FLAG;
 import com.MAVLink.enums.MAV_STATE;
 import com.pprzservices.core.drone.DroneClient;
-import com.pprzservices.core.mavlink.waypoints.WaypointClient;
+import com.pprzservices.core.mavlink.waypoints.types.BlockClient;
+import com.pprzservices.core.mavlink.waypoints.types.WaypointClient;
 
 public class MavLinkMsgHandler {
 
@@ -20,12 +21,11 @@ public class MavLinkMsgHandler {
 
     private DroneClient mDroneClient;
 
-    // Pass the service handler
     private Handler mHandler;
 
     private WaypointClient mWaypointClient;
 
-    // TODO: Fix waypoint protocol error
+    private BlockClient mBlockClient;
 
     public MavLinkMsgHandler(DroneClient droneClient, Handler handler) {
         mDroneClient = droneClient;
@@ -33,20 +33,36 @@ public class MavLinkMsgHandler {
         mHandler = handler;
 
         mWaypointClient = new WaypointClient(mDroneClient, mHandler);
+
+        mBlockClient = new BlockClient(mDroneClient, mHandler);
     }
 
-    public WaypointClient getWaypointProtocol() {
+    public WaypointClient getWaypointClient() {
         return mWaypointClient;
+    }
+
+    public BlockClient getBlockClient() {
+        return mBlockClient;
     }
 
     public void receiveData(MAVLinkMessage msg)
     {
-        // Handle any message that might contain mission data
-        mWaypointClient.waypointMsgHandler(msg);
+        mWaypointClient.missionMsgHandler(msg);
+
+        mBlockClient.missionMsgHandler(msg);
 
         switch (msg.msgid) {
+            case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT: {
+                msg_heartbeat msg_heart = (msg_heartbeat) msg;
+                checkIfFlying(msg_heart);
+                processState(msg_heart);
+                mDroneClient.getDrone().onHeartbeat(msg_heart);
+                break;
+            }
+
 	        case msg_attitude.MAVLINK_MSG_ID_ATTITUDE: {
 	            msg_attitude msg_att = (msg_attitude) msg;
+                mDroneClient.getDrone().setTime(msg_att.time_boot_ms);
                 mDroneClient.getDrone().setRollPitchYaw(msg_att.roll, msg_att.pitch, msg_att.yaw);
 	            break;
 	        }
@@ -56,14 +72,6 @@ public class MavLinkMsgHandler {
                 mDroneClient.getDrone().setAltitudeGroundAndAirSpeeds(msg_vfr_hud.alt, msg_vfr_hud.groundspeed, msg_vfr_hud.airspeed, msg_vfr_hud.climb);
 	            break;
 	        }
-        
-            case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT: {
-                msg_heartbeat msg_heart = (msg_heartbeat) msg;
-                checkIfFlying(msg_heart);
-                processState(msg_heart);
-                mDroneClient.getDrone().onHeartbeat(msg_heart);
-                break;
-            }
             
             case msg_battery_status.MAVLINK_MSG_ID_BATTERY_STATUS: {
             	msg_battery_status msg_batt = (msg_battery_status) msg;
@@ -85,7 +93,7 @@ public class MavLinkMsgHandler {
             	msg_global_position_int msg_pos = (msg_global_position_int) msg;
             
             	// for now ignore the relative altitude and ground speeds
-                mDroneClient.getDrone().setLlaHdg(msg_pos.lat, msg_pos.lon, msg_pos.alt, msg_pos.hdg);
+                mDroneClient.getDrone().setLlaHdg(msg_pos.lat, msg_pos.lon, msg_pos.alt, msg_pos.relative_alt, msg_pos.hdg);
             	break;
             }
             

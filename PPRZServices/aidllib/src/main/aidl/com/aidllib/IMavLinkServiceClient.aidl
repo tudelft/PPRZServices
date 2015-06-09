@@ -25,4 +25,8 @@ interface IMavLinkServiceClient {
     void requestMissionBlockList();
 
     List<String> getMissionBlockList();
+
+    void onBlockSelected(int id);
+
+    int getCurrentBlock();
 }

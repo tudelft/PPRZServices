@@ -23,17 +23,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
 	private static final String TAG = MainActivity.class.getSimpleName();
-	
+
+	private final int delay = 500;
+
 	private Handler handler;
 
 	IMavLinkServiceClient mServiceClient;
@@ -63,7 +68,11 @@ public class MainActivity extends Activity {
 
 	private TextView wpCount;
 
+	private List<String> blocks;
+
 	private TextView blockCount;
+
+	private Spinner blockSpinner;
 
 	Intent intent;
 	
@@ -155,6 +164,11 @@ public class MainActivity extends Activity {
 					break;
 				}
 
+				case "CURRENT_BLOCK_UPDATED": {
+					updateMissionBlocksSpinnerSelection();
+					break;
+				}
+
 	    		default:
 	    			break;
     		}
@@ -194,6 +208,9 @@ public class MainActivity extends Activity {
 		wpCount = (TextView) findViewById(R.id.waypoint_count);
 
 		blockCount = (TextView) findViewById(R.id.block_count);
+
+		blockSpinner = (Spinner) findViewById(R.id.block_spinner);
+		blockSpinner.setOnItemSelectedListener(this);
 	}
 
 	@Override
@@ -323,7 +340,6 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
-
 
 	/**
      * This runnable object is created such that the update is performed
@@ -484,13 +500,49 @@ public class MainActivity extends Activity {
 			@Override
 			public void run() {
 				try {
-					List<String> blocks = mServiceClient.getMissionBlockList();
+					blocks = mServiceClient.getMissionBlockList();
 					blockCount.setText(getString(R.string.block_count) + " " + String.format("%d", blocks.size()));
+					updateMissionBlocksSpinner();
 				} catch (RemoteException e) {
 					// TODO: Handle exception
 				}
 			}
 		});
+	}
+
+	private void updateMissionBlocksSpinner() {
+		ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, blocks);
+		spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		blockSpinner.setAdapter(spinnerArrayAdapter);
+	}
+
+	private void updateMissionBlocksSpinnerSelection() {
+		if (blocks.size() > 0) {
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Log.d(TAG, "Block: " + mServiceClient.getCurrentBlock());
+						blockSpinner.setSelection(mServiceClient.getCurrentBlock());
+					} catch (RemoteException e) {
+						// TODO: Handle exception
+					}
+				}
+			}, delay);
+		}
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+		try {
+			mServiceClient.onBlockSelected(position);
+		} catch (RemoteException e) {
+			// TODO: Handle exception
+		}
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
 	}
 }
 

@@ -125,6 +125,10 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			case "WAYPOINT": {
 				break;
 			}
+
+			case "BLOCK": {
+				break;
+			}
 			
 			default:
 				break;
@@ -191,5 +195,15 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 	@Override
 	public List<String> getMissionBlockList() {
 		return mDroneClient.getMissionBlocks();
+	}
+
+	@Override
+	public int getCurrentBlock() {
+		return mDroneClient.getCurrentBlock();
+	}
+
+	@Override
+	public void onBlockSelected(int id) {
+		mDroneClient.setMissionBlock(id);
 	}
 }

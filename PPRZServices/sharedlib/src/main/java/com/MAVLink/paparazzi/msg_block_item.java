@@ -11,7 +11,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         public class msg_block_item extends MAVLinkMessage{
         
         public static final int MAVLINK_MSG_ID_BLOCK_ITEM = 180;
-        public static final int MAVLINK_MSG_LENGTH = 54;
+        public static final int MAVLINK_MSG_LENGTH = 55;
         private static final long serialVersionUID = MAVLINK_MSG_ID_BLOCK_ITEM;
         
         
@@ -27,6 +27,10 @@ import com.MAVLink.Messages.MAVLinkPayload;
         * Component ID
         */
         public byte target_component;
+         	/**
+        * Lenght of name
+        */
+        public byte len;
          	/**
         * The name of the mission block
         */
@@ -46,6 +50,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         		packet.payload.putShort(seq);
         		packet.payload.putByte(target_system);
         		packet.payload.putByte(target_component);
+        		packet.payload.putByte(len);
         		 for (int i = 0; i < name.length; i++) {
                     packet.payload.putByte(name[i]);
                     }
@@ -63,6 +68,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         	    this.seq = payload.getShort();
         	    this.target_system = payload.getByte();
         	    this.target_component = payload.getByte();
+        	    this.len = payload.getByte();
         	     for (int i = 0; i < this.name.length; i++) {
                     this.name[i] = payload.getByte();
                     }
@@ -90,7 +96,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         //Log.d("MAVLINK_MSG_ID_BLOCK_ITEM", toString());
         }
         
-               /**
+                 /**
                         * Sets the buffer of this message with a string, adds the necessary padding
                         */
                         public void setName(String str) {
@@ -121,7 +127,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         * Returns a string with the MSG name and data
         */
         public String toString(){
-    	return "MAVLINK_MSG_ID_BLOCK_ITEM -"+" seq:"+seq+" target_system:"+target_system+" target_component:"+target_component+" name:"+name+"";
+    	return "MAVLINK_MSG_ID_BLOCK_ITEM -"+" seq:"+seq+" target_system:"+target_system+" target_component:"+target_component+" len:"+len+" name:"+name+"";
         }
         }
         

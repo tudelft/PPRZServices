@@ -46,7 +46,10 @@ public class DroneInterfaces {
         WAYPOINTS_UPDATED,
 
         // List of mission blocks updated
-        MISSION_BLOCKS_UPDATED
+        MISSION_BLOCKS_UPDATED,
+
+        // Current block updated
+        CURRENT_BLOCK_UPDATED
     }
 
     public interface OnDroneListener {

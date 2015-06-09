@@ -12,133 +12,143 @@ import com.sharedlib.model.Heartbeat.HeartbeatState;
 
 public class Drone {
 
+    private int mTime = 0; // milliseconds
+
+    boolean IS_CONNECTED = false;
+
 	private final State state = new State();
     
 	private final DroneClient mClient;
 	
-	private final Attitude attitude = new Attitude();
+	private final Attitude mAttitude = new Attitude();
 	
-	private final Altitude altitude = new Altitude();
+	private final Altitude mAltitude = new Altitude();
 	
-	private final Speed speed = new Speed();
+	private final Speed mSpeed = new Speed();
 	
-	private final Heartbeat heartbeat = new Heartbeat();
+	private final Heartbeat mHeartbeat = new Heartbeat();
 	
-	private final Battery battery = new Battery();
+	private final Battery mBattery = new Battery();
 	
-	private final Position position = new Position();
-    
+	private final Position mPosition = new Position();
+
 	public Drone(DroneClient client) {
 		this.mClient = client;
 	}
-	
-    boolean IS_CONNECTED = false;
+
+    public int getTime() { return mTime; }
+
+    public boolean isConnected() {
+        return IS_CONNECTED;
+    }
 
     public State getState() {
         return state;
     }
     
     public double getAltitude() {
-    	return this.altitude.getAltitude();
+    	return mAltitude.getAltitude();
     }
     
     public double getTargetAltitude() {
-    	return this.altitude.getTargetAltitude();
+    	return mAltitude.getTargetAltitude();
     }
+
+    public double getAGL() { return mAltitude.getAGL(); }
     
     public double getRoll() {
-    	return this.attitude.getRoll();
+    	return mAttitude.getRoll();
     }
     
     public double getPitch() {
-    	return this.attitude.getPitch();
+    	return mAttitude.getPitch();
     }
     
     public double getYaw() {
-    	return this.attitude.getYaw();
+    	return mAttitude.getYaw();
     }
     
     public double getGroundSpeed() {
-    	return this.speed.getGroundSpeed();
+    	return mSpeed.getGroundSpeed();
     }
     
     public double getAirSpeed() {
-    	return this.speed.getAirSpeed();
+    	return mSpeed.getAirSpeed();
     }
     
     public double getClimbSpeed() {
-    	return this.speed.getClimbSpeed();
+    	return mSpeed.getClimbSpeed();
     }
     
     public double getTargetSpeed() {
-    	return this.speed.getTargetSpeed();
+    	return mSpeed.getTargetSpeed();
     }
     
     public byte getSysid() {
-        return this.heartbeat.getSysid();
+        return mHeartbeat.getSysid();
     }
 
     public byte getCompid() {
-        return this.heartbeat.getCompid();
+        return mHeartbeat.getCompid();
     }
     
     public int getBattVolt() {
-    	return this.battery.getBattVolt();
+    	return mBattery.getBattVolt();
     }
     
     public int getBattLevel() {
-    	return this.battery.getBattLevel();
+    	return mBattery.getBattLevel();
     }
     
     public int getBattCurrent() {
-    	return this.battery.getBattCurrent();
+    	return mBattery.getBattCurrent();
     }
     
 	public byte getSatVisible() {
-		return this.position.getSatVisible();
+		return mPosition.getSatVisible();
 	}
 	
 	public int getTimeStamp() {
-		return this.position.getTimeStamp();
+		return mPosition.getTimeStamp();
 	}
 	
 	public int getLat() {
-		return this.position.getLat();
+		return mPosition.getLat();
 	}
 	
 	public int getLon() {
-		return this.position.getLon();
+		return mPosition.getLon();
 	}
 	
 	public int getAlt() {
-		return this.position.getAlt();
+		return mPosition.getAlt();
 	}
 	
 	public int getHdg() {
-		return this.position.getHdg();
+		return mPosition.getHdg();
 	}
-    
-    public boolean isConnected() {
-    	return IS_CONNECTED;
+
+    public void setTime(int time) {
+        mTime = time;
     }
     
     public void setRollPitchYaw(double roll, double pitch, double yaw) {
-    	this.attitude.setRollPitchYaw(roll, pitch, yaw);
+    	mAttitude.setRollPitchYaw(roll, pitch, yaw);
     	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.ATTITUDE_UPDATED);
     }
     
     public void setAltitudeGroundAndAirSpeeds(double altitude, double groundSpeed, double airSpeed, double climbSpeed) {
-    	this.altitude.setAltitude(altitude);
-    	this.speed.setGroundAndAirSpeeds(groundSpeed, airSpeed, climbSpeed);
+    	mAltitude.setAltitude(altitude);
+    	mSpeed.setGroundAndAirSpeeds(groundSpeed, airSpeed, climbSpeed);
     	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.ALTITUDE_SPEED_UPDATED);
     }
     
     public void onHeartbeat(msg_heartbeat msg) {
-        this.heartbeat.setSysid((byte) msg.sysid);
-        this.heartbeat.setCompid((byte) msg.compid);
-        this.heartbeat.setMavlinkVersion((byte)msg.mavlink_version);
+        mHeartbeat.setSysid((byte) msg.sysid);
+        mHeartbeat.setCompid((byte) msg.compid);
+        mHeartbeat.setMavlinkVersion((byte)msg.mavlink_version);
 
-        switch (this.heartbeat.heartbeatState) {
+        switch (mHeartbeat.heartbeatState) {
             case FIRST_HEARTBEAT: {               
             	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.HEARTBEAT_FIRST);             
                 break;
@@ -152,21 +162,22 @@ public class Drone {
             	break;
         }
 
-        this.heartbeat.heartbeatState = HeartbeatState.NORMAL_HEARTBEAT;
+        mHeartbeat.heartbeatState = HeartbeatState.NORMAL_HEARTBEAT;
     }
     
     public void setBatteryState(int battVolt, int battLevel, int battCurrent) {
-    	this.battery.setBatteryState(battVolt, battLevel, battCurrent);       
+    	mBattery.setBatteryState(battVolt, battLevel, battCurrent);
         mClient.onDroneEvent(DroneInterfaces.DroneEventsType.BATTERY_UPDATED);
     }
     
     public void setSatVisible(byte satVisible) {
-    	this.position.setSatVisible(satVisible);
+    	mPosition.setSatVisible(satVisible);
     	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.SATELLITES_VISIBLE_UPDATED);
     }
     
-    public void setLlaHdg(int lat, int lon, int alt, short hdg) {
-    	this.position.setLlaHdg(lat, lon, alt, hdg);
+    public void setLlaHdg(int lat, int lon, int alt, int AGL, short hdg) {
+        mAltitude.setAGL(AGL/1000.);
+    	mPosition.setLlaHdg(lat, lon, alt, hdg);
     	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.POSITION_UPDATED);
     }
 }

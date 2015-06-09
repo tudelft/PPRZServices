@@ -13,6 +13,8 @@ import com.pprzservices.core.drone.DroneInterfaces.OnDroneListener;
 import com.pprzservices.core.mavlink.MavLinkClient;
 import com.pprzservices.core.mavlink.MavLinkMsgHandler;
 import com.pprzservices.core.mavlink.MavLinkStreams;
+import com.pprzservices.core.mavlink.waypoints.types.BlockClient;
+import com.pprzservices.core.mavlink.waypoints.types.WaypointClient;
 import com.pprzservices.service.MavLinkServiceClient;
 
 import java.util.List;
@@ -40,7 +42,6 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
         this.connParams = connParams;
         this.drone = new Drone(this);
 
-        // The handler grabs hold of the main service looper
         this.mavLinkMsgHandler = new MavLinkMsgHandler(this, new Handler(context.getMainLooper()));
 
         this.mServiceClient = serviceClient;
@@ -116,18 +117,26 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
 	}
 
     public void requestWpList() {
-        mavLinkMsgHandler.getWaypointProtocol().requestWpList();
+        mavLinkMsgHandler.getWaypointClient().requestList();
     }
 
     public List<Waypoint> getWaypoints() {
-        return mavLinkMsgHandler.getWaypointProtocol().getWaypoints();
+        return mavLinkMsgHandler.getWaypointClient().getWaypoints();
     }
 
     public void requestMissionBlockList() {
-        mavLinkMsgHandler.getWaypointProtocol().requestBlockList();
+        mavLinkMsgHandler.getBlockClient().requestList();
     }
 
     public List<String> getMissionBlocks() {
-        return mavLinkMsgHandler.getWaypointProtocol().getBlocks();
+        return mavLinkMsgHandler.getBlockClient().getBlocks();
+    }
+
+    public int getCurrentBlock() {
+        return mavLinkMsgHandler.getBlockClient().getCurrentBlock();
+    }
+
+    public void setMissionBlock(int id) {
+        mavLinkMsgHandler.getBlockClient().sendItem((short) id);
     }
 }
