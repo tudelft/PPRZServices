@@ -4,8 +4,6 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.MAVLink.Messages.MAVLinkMessage;
-import com.MAVLink.common.msg_mission_ack;
-import com.MAVLink.enums.MAV_MISSION_RESULT;
 import com.MAVLink.paparazzi.msg_block_count;
 import com.MAVLink.paparazzi.msg_block_item;
 import com.MAVLink.paparazzi.msg_block_request;
