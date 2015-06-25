@@ -1,4 +1,4 @@
-package com.pprzservices.core.mavlink.waypoints;
+package com.pprzservices.core.mavlink.mission;
 
 import android.os.Handler;
 import android.util.Log;
@@ -39,8 +39,8 @@ public abstract class MissionManager {
 
     // Constructor
     public MissionManager(DroneClient client, Handler handler) {
-        this.mClient = client;
-        this.mHandler = handler;
+        mClient = client;
+        mHandler = handler;
     }
 
     // Timeout runnable according to Handler documentation, which handles retries or timeouts

@@ -1,4 +1,4 @@
-package com.pprzservices.core.mavlink.waypoints.types;
+package com.pprzservices.core.mavlink.mission.types;
 
 import android.os.Handler;
 import android.util.Log;
@@ -10,7 +10,7 @@ import com.MAVLink.paparazzi.msg_block_request;
 import com.MAVLink.paparazzi.msg_block_request_list;
 import com.pprzservices.core.drone.DroneClient;
 import com.pprzservices.core.drone.DroneInterfaces;
-import com.pprzservices.core.mavlink.waypoints.MissionManager;
+import com.pprzservices.core.mavlink.mission.MissionManager;
 import com.pprzservices.service.MavLinkService;
 
 import java.util.ArrayList;
@@ -29,8 +29,6 @@ public class BlockClient extends MissionManager {
     private List<String> mBlocks = new ArrayList<String>();
 
     private int mCurrentBlock = 0;
-
-    DroneClient mClient;
 
     public BlockClient(DroneClient client, Handler handler) {
         super(client, handler);

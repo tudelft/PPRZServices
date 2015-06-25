@@ -3,6 +3,7 @@ package com.pprzservices.core.drone;
 import android.content.Context;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
@@ -13,8 +14,6 @@ import com.pprzservices.core.drone.DroneInterfaces.OnDroneListener;
 import com.pprzservices.core.mavlink.MavLinkClient;
 import com.pprzservices.core.mavlink.MavLinkMsgHandler;
 import com.pprzservices.core.mavlink.MavLinkStreams;
-import com.pprzservices.core.mavlink.waypoints.types.BlockClient;
-import com.pprzservices.core.mavlink.waypoints.types.WaypointClient;
 import com.pprzservices.service.MavLinkServiceClient;
 
 import java.util.List;

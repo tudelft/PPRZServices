@@ -12,8 +12,8 @@ import com.MAVLink.common.msg_vfr_hud;
 import com.MAVLink.enums.MAV_MODE_FLAG;
 import com.MAVLink.enums.MAV_STATE;
 import com.pprzservices.core.drone.DroneClient;
-import com.pprzservices.core.mavlink.waypoints.types.BlockClient;
-import com.pprzservices.core.mavlink.waypoints.types.WaypointClient;
+import com.pprzservices.core.mavlink.mission.types.BlockClient;
+import com.pprzservices.core.mavlink.mission.types.WaypointClient;
 
 public class MavLinkMsgHandler {
 

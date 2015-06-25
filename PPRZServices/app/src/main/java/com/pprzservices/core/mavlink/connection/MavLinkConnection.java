@@ -86,7 +86,7 @@ public abstract class MavLinkConnection {
                 final byte[] readBuffer = new byte[READ_BUFFER_SIZE];
 
                 while (mConnectionStatus.get() == MAVLINK_CONNECTED) {
-                    Log.d(TAG, "Waiting for data...");
+                    Log.i(TAG, "Waiting for data...");
                     int bufferSize = readDataBlock(readBuffer);
                     handleData(parser, bufferSize, readBuffer, listener);
                 }
