@@ -57,6 +57,7 @@ public class MainActivity extends Activity {
 
     @Override 
     public void onDestroy() {
-	    stopService(intent);
+		super.onDestroy();
+		stopService(intent);
     }	
 }
