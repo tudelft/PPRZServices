@@ -99,35 +99,37 @@
     <!-- Battery -->
     
     <TextView
-        android:id="@+id/batt_volt"
+        android:id="@+id/lat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/yaw"
         android:layout_below="@+id/yaw"
-        android:text="@string/batt_volt" />
+        android:text="@string/lat" />
     
     <TextView
-        android:id="@+id/batt_remain"
+        android:id="@+id/lon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/batt_volt"
-        android:layout_below="@+id/batt_volt"
-        android:text="@string/batt_remain" />
+        android:layout_alignLeft="@+id/lat"
+        android:layout_below="@+id/lat"
+        android:text="@string/lon" />
 
     <TextView
-        android:id="@+id/batt_current"
+        android:id="@+id/gps_alt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/batt_remain"
-        android:layout_below="@+id/batt_remain"
-        android:text="@string/batt_current" />
+        android:layout_alignLeft="@+id/lon"
+        android:layout_below="@+id/lon"
+        android:text="@string/gps_alt" />
+
+    <!-- Waypoints -->
 
     <TextView
         android:id="@+id/waypoint_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/batt_current"
-        android:layout_below="@+id/batt_current"
+        android:layout_alignLeft="@+id/gps_alt"
+        android:layout_below="@+id/gps_alt"
         android:text="@string/waypoint_count" />
 
     <!-- Mission blocks -->

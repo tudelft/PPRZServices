@@ -7,6 +7,7 @@ import com.aidllib.core.mavlink.waypoints.Waypoint;
 import com.aidllib.core.model.Altitude;
 import com.aidllib.core.model.Attitude;
 import com.aidllib.core.model.Heartbeat;
+import com.aidllib.core.model.Position;
 import com.aidllib.core.model.Speed;
 
 import android.app.Activity;
@@ -63,8 +64,14 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 	private TextView roll;
 	
 	private TextView pitch;
-	
+
 	private TextView yaw;
+
+	private TextView lat;
+
+	private TextView lon;
+
+	private TextView gpsAlt;
 
 	private TextView wpCount;
 
@@ -141,12 +148,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 	    			updateSpeed();
 	    			break;
 	    		}
-	    		
-	    		case "BATTERY_UPDATED": {
-	    			break;
-	    		}
-	    		
+
 	    		case "POSITION_UPDATED": {
+					updatePosition();
 	    			break;
 	    		}
 	    		
@@ -204,6 +208,12 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		pitch = (TextView) findViewById(R.id.pitch);
 		
 		yaw = (TextView) findViewById(R.id.yaw);
+
+		lat = (TextView) findViewById(R.id.lat);
+
+		lon = (TextView) findViewById(R.id.lon);
+
+		gpsAlt = (TextView) findViewById(R.id.gps_alt);
 
 		wpCount = (TextView) findViewById(R.id.waypoint_count);
 
@@ -418,7 +428,23 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			}
 		});
 	}
-	
+
+	private void updatePosition() {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Position mPosition = getAttribute("POSITION");
+					lat.setText(getString(R.string.roll) + " " + String.format("%d", mPosition.getLat()));
+					lon.setText(getString(R.string.pitch) + " " + String.format("%d", mPosition.getLon()));
+					gpsAlt.setText(getString(R.string.yaw) + " " + String.format("%d", mPosition.getAlt()));
+				} catch (Throwable t) {
+					Log.e(TAG, "Error while updating the position", t);
+				}
+			}
+		});
+	}
+
 	public <T extends Parcelable> T getAttribute(String type) {
         if (type == null)
             return null;
@@ -456,6 +482,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             	
             case "ATTITUDE":
             	return (T) new Attitude();
+
+			case "POSITION":
+				return (T) new Position();
                 
             default:
             	return null;
@@ -475,6 +504,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 				
 			case "ATTITUDE":
 				return Attitude.class.getClassLoader();
+
+			case "POSITION":
+				return Position.class.getClassLoader();
 
 			default:
 				return null;

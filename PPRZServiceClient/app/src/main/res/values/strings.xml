@@ -23,9 +23,9 @@
     <string name="pitch">pitch:</string>
     <string name="yaw">yaw:</string>
 
-    <string name="batt_volt">batt_volt:</string>
-    <string name="batt_remain">batt_remain:</string>
-    <string name="batt_current">batt_current:</string>
+    <string name="lat">lat:</string>
+    <string name="lon">lon:</string>
+    <string name="gps_alt">gps_alt:</string>
 
     <string name="waypoint_count">WP count:</string>
     <string name="block_count">block count:</string>
