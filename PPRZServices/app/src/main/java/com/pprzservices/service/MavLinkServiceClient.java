@@ -1,6 +1,7 @@
 package com.pprzservices.service;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -122,13 +123,20 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 				break;
 			}
 
-			case "WAYPOINT": {
+			case "WAYPOINTS": {
+                carrier.putParcelableArrayList(type, (ArrayList<? extends Parcelable>) drone.getWaypoints());
 				break;
 			}
 
-			case "BLOCK": {
+			case "CURRENT_BLOCK": {
+			    carrier.putInt(type, drone.getCurrentBlock());
 				break;
 			}
+
+            case "BLOCKS": {
+                carrier.putStringArrayList(type, (ArrayList<String>) drone.getBlocks());
+                break;
+            }
 			
 			default:
 				break;
@@ -140,7 +148,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 	@Override
 	public void addEventListener(String id, IEventListener listener)
 			throws RemoteException {
-		Log.d(TAG, "Adding event listener...");
+		Log.i(TAG, "Adding event listener...");
 
 		mListeners.put(id, listener);
 	}
@@ -152,8 +160,6 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 	
 	@Override
     public void connectDroneClient(ConnectionParameter connParams) throws RemoteException  {
-		Log.d(TAG, "Connecting to Drone client...");
-
         if (connParams == null)
             return;
 
@@ -177,33 +183,33 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 		}
 	}
 
-	@Override
-	public void requestWpList() {
-		mDroneClient.requestWpList();
-	}
+    @Override
+    public void onCallback(Bundle carrier) {
 
-	@Override
-	public List<Waypoint> getWpList() {
-		return mDroneClient.getWaypoints();
-	}
+        final Drone drone = mDroneClient.getDrone();
 
-	@Override
-	public void requestMissionBlockList() {
-		mDroneClient.requestMissionBlockList();
-	}
+        switch (carrier.getString("TYPE")) {
+            case "REQUEST_WP_LIST": {
+                mDroneClient.requestWpList();
+                break;
+            }
 
-	@Override
-	public List<String> getMissionBlockList() {
-		return mDroneClient.getMissionBlocks();
-	}
+            case "WRITE_WP": {
+                carrier.setClassLoader(Waypoint.class.getClassLoader());
+                Waypoint waypoint = carrier.getParcelable("WAYPOINT");
+                mDroneClient.writeWp(waypoint.getLat(), waypoint.getLon(), waypoint.getAlt(), (short)waypoint.getSeq());
+                break;
+            }
 
-	@Override
-	public int getCurrentBlock() {
-		return mDroneClient.getCurrentBlock();
-	}
+            case "REQUEST_BLOCK_LIST": {
+                mDroneClient.requestBlockList();
+                break;
+            }
 
-	@Override
-	public void onBlockSelected(int id) {
-		mDroneClient.setMissionBlock(id);
-	}
+            case "BLOCK_SELECTED": {
+                drone.setCurrentBlock(carrier.getShort("SEQ"));
+                break;
+            }
+        }
+    }
 }

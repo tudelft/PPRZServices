@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.MAVLink.Messages.MAVLinkMessage;
+import com.MAVLink.common.msg_mission_ack;
 import com.MAVLink.common.msg_mission_count;
 import com.MAVLink.common.msg_mission_item;
 import com.MAVLink.common.msg_mission_request;
@@ -15,6 +16,8 @@ import com.pprzservices.core.mavlink.mission.MissionManager;
 import com.pprzservices.service.MavLinkService;
 
 import android.os.Handler;
+import android.os.RemoteException;
+import android.util.Log;
 
 /**
  * WaypointClient.java - Implements the MAVLink MissionLib waypoint protocol
@@ -24,18 +27,12 @@ import android.os.Handler;
  *
  */
 public class WaypointClient extends MissionManager{
-	private static final String TAG = MavLinkService.class.getSimpleName();
+	private static final String TAG = WaypointClient.class.getSimpleName();
 
     private short wpCount = 0;
 
-    private List<Waypoint> mWaypoints = new ArrayList<Waypoint>();
-
 	public WaypointClient(DroneClient client, Handler handler) {
 		super(client, handler);
-	}
-
-	public List<Waypoint> getWaypoints() {
-		return mWaypoints;
 	}
 
 	@Override
@@ -47,22 +44,32 @@ public class WaypointClient extends MissionManager{
 
 			case STATE_REQUEST_LIST: {
     			if (msg.msgid == msg_mission_count.MAVLINK_MSG_ID_MISSION_COUNT) {
-					// Stop the timeout thread
-					stopTimeoutThread(new TimeoutRequestTimer());
-					nRetries = 0;
+					List<Waypoint> waypoints = null;
+					try {
+						waypoints = mClient.getDrone().getWaypoints();
 
-    				// Store the waypoint count
-                    wpCount = ((msg_mission_count) msg).count;
+					} catch (RemoteException e) {
+						// TODO: Handle remote exception
+					}
 
-                    // Clear the current list (if any waypoints are present)
-					mWaypoints.clear();
-                    
-                    // Request the first waypoint
-                    if (wpCount > 0) {
-                    	requestItem((short)mWaypoints.size());
-                    
-                    	// Start the timeout thread
-                    	startTimeoutThread(new TimeoutRequestTimer((short)mWaypoints.size()));
+                    if (waypoints != null) {
+                        // Stop the timeout thread
+                        stopTimeoutThread(new TimeoutRequestTimer());
+                        nRetries = 0;
+
+                        // Store the waypoint count
+                        wpCount = ((msg_mission_count) msg).count;
+
+                        // Clear the current list (if any waypoints are present)
+                        waypoints.clear();
+
+                        // Request the first waypoint
+                        if (wpCount > 0) {
+                            requestItem((short) waypoints.size());
+
+                            // Start the timeout thread
+                            startTimeoutThread(new TimeoutRequestTimer((short) waypoints.size()));
+                        }
                     }
                 }
     			break;
@@ -70,32 +77,41 @@ public class WaypointClient extends MissionManager{
 
     		case STATE_REQUEST_ITEM: {
     			if (msg.msgid == msg_mission_item.MAVLINK_MSG_ID_MISSION_ITEM) {
-					// Stop the timeout thread
-					stopTimeoutThread(new TimeoutRequestTimer((short)mWaypoints.size()));
-    				nRetries = 0;
+					List<Waypoint> waypoints = null;
+					try {
+						waypoints = mClient.getDrone().getWaypoints();
+					} catch (RemoteException e) {
+						// TODO: Handle remote exception
+					}
 
-    				// Add the received waypoint to the list of waypoints
-    				msg_mission_item item = (msg_mission_item) msg;
-					mWaypoints.add(new Waypoint(item.x, item.y, item.z, item.seq, item.target_system, item.target_component));
-    				
-    				if (mWaypoints.size() < wpCount) {
-    					// Request next waypoint
-    					requestItem((short)mWaypoints.size());
+                    if (waypoints != null) {
+                        // Stop the timeout thread
+                        stopTimeoutThread(new TimeoutRequestTimer());
+                        nRetries = 0;
 
-						// Start the timeout thread
-						startTimeoutThread(new TimeoutRequestTimer((short)mWaypoints.size()));
-                    } else {
-                        // Set state to idle
-                    	state = StateMachine.STATE_IDLE;
-                        
-                        // Send mission acknowledgement
-                    	sendMissionAck();
+                        // Add the received waypoint to the list of waypoints
+                        msg_mission_item item = (msg_mission_item) msg;
+                        waypoints.add(new Waypoint(item.x, item.y, item.z, item.seq, item.target_system, item.target_component));
 
-						// Notify the drone client that the list of waypoints is updated
-						mClient.onDroneEvent(DroneInterfaces.DroneEventsType.WAYPOINTS_UPDATED);
+                        if (waypoints.size() < wpCount) {
+                            // Request next waypoint
+                            requestItem((short) waypoints.size());
 
-						// TODO: Currently changing a single waypoints implies reloading the entire list
+                            // Start the timeout thread
+                            startTimeoutThread(new TimeoutRequestTimer((short) waypoints.size()));
+                        } else {
+                            // Set state to idle
+                            state = StateMachine.STATE_IDLE;
 
+                            // Send mission acknowledgement
+                            sendMissionAck();
+
+                            // Notify the drone client that the list of waypoints is updated
+                            mClient.onDroneEvent(DroneInterfaces.DroneEventsType.WAYPOINTS_UPDATED);
+
+                            // TODO: Currently changing a single waypoints implies reloading the entire list
+
+                        }
                     }
     			}
     			break;
@@ -103,15 +119,19 @@ public class WaypointClient extends MissionManager{
     		
     		case STATE_WRITE_COUNT: {
     			
-    			// TODO: Implement write list to MAV
+    			// TODO: Implement write list count to MAV
     			
     			break;
     		}
     		
     		case STATE_WRITE_ITEM: {
-    			
-    			// TODO: Implement write WP to MAV
-    			
+                if (msg.msgid == msg_mission_ack.MAVLINK_MSG_ID_MISSION_ACK) {
+                    // Stop the timeout thread
+                    stopTimeoutThread(new TimeoutRequestTimer());
+
+                    // Set state to idle
+                    state = StateMachine.STATE_IDLE;
+                }
     			break;
     		}
     		
@@ -156,7 +176,16 @@ public class WaypointClient extends MissionManager{
 		mClient.getMavLinkClient().sendMavPacket(msg.pack());
     }
 
-	@Override
-	public void sendItem(short seq) {
+    @Override
+    protected void sendItem(short seq) {
+    }
+
+    public void sendItem(float lat, float lon, float alt, short seq) {
+        msg_mission_item msg = new msg_mission_item();
+        msg.x = lat;
+        msg.y = lon;
+        msg.z = alt;
+        msg.seq = seq;
+        mClient.getMavLinkClient().sendMavPacket(msg.pack());
 	}
 }

@@ -32,9 +32,10 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
+public class MainActivity extends Activity {
 
 	private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -79,9 +80,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
 	private TextView blockCount;
 
-	private Spinner blockSpinner;
-
-	Intent intent;
+//	private Spinner blockSpinner;
 	
 	/**
      * Create service connection
@@ -159,17 +158,18 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 	    		}
 
 				case "WAYPOINTS_UPDATED": {
+                    Log.d(TAG, "Waypoints updated");
 					updateWaypoints();
 					break;
 				}
 
 				case "MISSION_BLOCKS_UPDATED": {
-					updateMissionBlocks();
+					updateBlocks();
 					break;
 				}
 
 				case "CURRENT_BLOCK_UPDATED": {
-					updateMissionBlocksSpinnerSelection();
+//					updateMissionBlocksSpinnerSelection();
 					break;
 				}
 
@@ -219,8 +219,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
 		blockCount = (TextView) findViewById(R.id.block_count);
 
-		blockSpinner = (Spinner) findViewById(R.id.block_spinner);
-		blockSpinner.setOnItemSelectedListener(this);
+//		blockSpinner = (Spinner) findViewById(R.id.block_spinner);
+//		blockSpinner.setOnItemSelectedListener(this);
 	}
 
 	@Override
@@ -331,25 +331,25 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		}
     }
 
-	public void onWpButtonRequest(View view) {
-		if (isConnected) {
-			try {
-				mServiceClient.requestWpList();
-			} catch (RemoteException e) {
-				// TODO: Handle exception
-			}
-		}
-	}
-
-	public void onBlockButtonRequest(View view) {
-		if (isConnected) {
-			try {
-				mServiceClient.requestMissionBlockList();
-			} catch (RemoteException e) {
-				// TODO: Handle exception
-			}
-		}
-	}
+//	public void onWpButtonRequest(View view) {
+//		if (isConnected) {
+//			try {
+//				mServiceClient.requestWpList();
+//			} catch (RemoteException e) {
+//				// TODO: Handle exception
+//			}
+//		}
+//	}
+//
+//	public void onBlockButtonRequest(View view) {
+//		if (isConnected) {
+//			try {
+//				mServiceClient.requestMissionBlockList();
+//			} catch (RemoteException e) {
+//				// TODO: Handle exception
+//			}
+//		}
+//	}
 
 	/**
      * This runnable object is created such that the update is performed
@@ -445,6 +445,38 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		});
 	}
 
+	private void updateWaypoints() {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Bundle carrier = mServiceClient.getAttribute("WAYPOINTS");
+					carrier.setClassLoader(Waypoint.class.getClassLoader());
+					List<Waypoint> waypoints = carrier.getParcelableArrayList("WAYPOINTS");
+					wpCount.setText(getString(R.string.waypoint_count) + " " + String.format("%d", waypoints.size()));
+				} catch (RemoteException e) {
+					// TODO: Handle exception
+				}
+			}
+		});
+	}
+
+	private void updateBlocks() {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Bundle carrier = mServiceClient.getAttribute("BLOCKS");
+					blocks = carrier.getStringArrayList("BLOCKS");
+					blockCount.setText(getString(R.string.block_count) + " " + String.format("%d", blocks.size()));
+//					updateMissionBlocksSpinner();
+				} catch (RemoteException e) {
+					// TODO: Handle exception
+				}
+			}
+		});
+	}
+
 	public <T extends Parcelable> T getAttribute(String type) {
         if (type == null)
             return null;
@@ -513,68 +545,41 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		}
 	 }
 
-	private void updateWaypoints() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					List<Waypoint> waypoints = mServiceClient.getWpList();
-					wpCount.setText(getString(R.string.waypoint_count) + " " + String.format("%d", waypoints.size()));
-				} catch (RemoteException e) {
-					// TODO: Handle exception
-				}
-			}
-		});
-	}
 
-	private void updateMissionBlocks() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					blocks = mServiceClient.getMissionBlockList();
-					blockCount.setText(getString(R.string.block_count) + " " + String.format("%d", blocks.size()));
-					updateMissionBlocksSpinner();
-				} catch (RemoteException e) {
-					// TODO: Handle exception
-				}
-			}
-		});
-	}
 
-	private void updateMissionBlocksSpinner() {
-		ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, blocks);
-		spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		blockSpinner.setAdapter(spinnerArrayAdapter);
-	}
+//	private void updateMissionBlocksSpinner() {
+//		ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, blocks);
+//		spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//		blockSpinner.setAdapter(spinnerArrayAdapter);
+//	}
+//
+//	private void updateMissionBlocksSpinnerSelection() {
+//		if (blocks.size() > 0) {
+//			handler.postDelayed(new Runnable() {
+//				@Override
+//				public void run() {
+//					try {
+//						Log.d(TAG, "Block: " + mServiceClient.getCurrentBlock());
+//						blockSpinner.setSelection(mServiceClient.getCurrentBlock());
+//					} catch (RemoteException e) {
+//						// TODO: Handle exception
+//					}
+//				}
+//			}, delay);
+//		}
+//	}
 
-	private void updateMissionBlocksSpinnerSelection() {
-		if (blocks.size() > 0) {
-			handler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						Log.d(TAG, "Block: " + mServiceClient.getCurrentBlock());
-						blockSpinner.setSelection(mServiceClient.getCurrentBlock());
-					} catch (RemoteException e) {
-						// TODO: Handle exception
-					}
-				}
-			}, delay);
-		}
-	}
-
-	@Override
-	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-		try {
-			mServiceClient.onBlockSelected(position);
-		} catch (RemoteException e) {
-			// TODO: Handle exception
-		}
-	}
-
-	@Override
-	public void onNothingSelected(AdapterView<?> parent) {
-	}
+//	@Override
+//	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//		try {
+//			mServiceClient.onBlockSelected(position);
+//		} catch (RemoteException e) {
+//			// TODO: Handle exception
+//		}
+//	}
+//
+//	@Override
+//	public void onNothingSelected(AdapterView<?> parent) {
+//	}
 }
 

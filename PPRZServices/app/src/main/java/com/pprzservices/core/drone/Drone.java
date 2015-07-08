@@ -1,6 +1,9 @@
 package com.pprzservices.core.drone;
 
+import android.os.RemoteException;
+
 import com.MAVLink.common.msg_heartbeat;
+import com.aidllib.core.mavlink.waypoints.Waypoint;
 import com.sharedlib.model.Altitude;
 import com.sharedlib.model.Attitude;
 import com.sharedlib.model.Battery;
@@ -9,6 +12,9 @@ import com.sharedlib.model.Position;
 import com.sharedlib.model.Speed;
 import com.sharedlib.model.State;
 import com.sharedlib.model.Heartbeat.HeartbeatState;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Drone {
 
@@ -31,6 +37,12 @@ public class Drone {
 	private final Battery mBattery = new Battery();
 	
 	private final Position mPosition = new Position();
+
+    private List<Waypoint> mWaypoints = new ArrayList<Waypoint>();
+
+    private int mCurrentBlock = 0;
+
+    private List<String> mBlocks = new ArrayList<String>();
 
 	public Drone(DroneClient client) {
 		this.mClient = client;
@@ -128,6 +140,20 @@ public class Drone {
 		return mPosition.getHdg();
 	}
 
+    public List<Waypoint> getWaypoints() throws RemoteException {
+        if (mWaypoints == null) throw new RemoteException();
+
+        return mWaypoints;
+    }
+
+    public int getCurrentBlock() { return mCurrentBlock; }
+
+    public List<String> getBlocks() throws RemoteException {
+        if (mBlocks == null) throw new RemoteException();
+
+        return mBlocks;
+    }
+
     public void setTime(int time) {
         mTime = time;
     }
@@ -146,7 +172,7 @@ public class Drone {
     public void onHeartbeat(msg_heartbeat msg) {
         mHeartbeat.setSysid((byte) msg.sysid);
         mHeartbeat.setCompid((byte) msg.compid);
-        mHeartbeat.setMavlinkVersion((byte)msg.mavlink_version);
+        mHeartbeat.setMavlinkVersion((byte) msg.mavlink_version);
 
         switch (mHeartbeat.heartbeatState) {
             case FIRST_HEARTBEAT: {               
@@ -179,5 +205,10 @@ public class Drone {
         mAltitude.setAGL(AGL/1000.);
     	mPosition.setLlaHdg(lat, lon, alt, hdg);
     	mClient.onDroneEvent(DroneInterfaces.DroneEventsType.POSITION_UPDATED);
+    }
+
+    public void setCurrentBlock(int currentBlock) {
+        mCurrentBlock = currentBlock;
+        mClient.onDroneEvent(DroneInterfaces.DroneEventsType.CURRENT_BLOCK_UPDATED);
     }
 }

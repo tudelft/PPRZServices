@@ -26,91 +26,91 @@ public class MavLinkClient implements MavLinkConnectionListener, MavLinkOutputSt
      */
     private static final int MAX_PACKET_SEQUENCE = 255;
 
-    private final MavlinkInputStream listener;
+    private final MavlinkInputStream mListener; // extend this parameter to allow multiple connections
 
     private final MavLinkServiceClient mServiceClient;
-    protected final Context context;
+//    protected final Context context;
 
     private int packetSeqNumber = 0;
-    private final ConnectionParameter connParams;
+    private final ConnectionParameter mConnParams;
 
     public MavLinkClient(Context context, MavlinkInputStream listener,
                          ConnectionParameter connParams, MavLinkServiceClient serviceClient) {
-        this.context = context;
-        this.listener = listener;
-        this.connParams = connParams;
-        this.mServiceClient = serviceClient;
+//        this.context = context;
+        mListener = listener;
+        mConnParams = connParams;
+        mServiceClient = serviceClient;
     }
     
     @Override
     public void onStartingConnection() {
-        listener.notifyStartingConnection();
+        mListener.notifyStartingConnection();
     }
 
     @Override
     public void onConnect() {
-        listener.notifyConnected();
+        mListener.notifyConnected();
     }
 
     @Override
     public void onReceivePacket(final MAVLinkPacket packet) {
-        listener.notifyReceivedData(packet);
+        mListener.notifyReceivedData(packet);
     }
 
     @Override
     public void onDisconnect() {
-        listener.notifyDisconnected();
+        mListener.notifyDisconnected();
         closeConnection();
     }
 
     @Override
     public void onComError(final String errMsg) {
         if (errMsg != null) {
-            listener.onStreamError(errMsg);
+            mListener.onStreamError(errMsg);
         }
     }
 
     @Override
     public void openConnection() {
-        if (this.connParams == null)
+        if (this.mConnParams == null)
             return;
 
-        if (mServiceClient.getConnectionStatus(this.connParams) == MavLinkConnection.MAVLINK_DISCONNECTED) {
-        	mServiceClient.connectMavLink(this.connParams, this);
+        if (mServiceClient.getConnectionStatus(this.mConnParams) == MavLinkConnection.MAVLINK_DISCONNECTED) {
+        	mServiceClient.connectMavLink(this.mConnParams, this);
         }
     }
 
     @Override
     public void closeConnection() {
-        if (this.connParams == null)
+        if (this.mConnParams == null)
             return;
 
-        if (mServiceClient.getConnectionStatus(this.connParams) == MavLinkConnection.MAVLINK_CONNECTED) {
-        	mServiceClient.disconnectMavLink(this.connParams, this);
+        if (mServiceClient.getConnectionStatus(this.mConnParams) == MavLinkConnection.MAVLINK_CONNECTED) {
+        	mServiceClient.disconnectMavLink(this.mConnParams, this);
         }
     }
 
     @Override
     public void sendMavPacket(MAVLinkPacket pack) {
-        if (this.connParams == null) {
+        if (this.mConnParams == null) {
             return;
         }
 
         pack.seq = packetSeqNumber;
 
-        if(mServiceClient.sendData(this.connParams, pack)) {
+        if(mServiceClient.sendData(this.mConnParams, pack)) {
             packetSeqNumber = (packetSeqNumber + 1) % (MAX_PACKET_SEQUENCE + 1);
         }
     }
 
     @Override
     public boolean isConnected() {
-        return this.connParams != null
-                && mServiceClient.getConnectionStatus(this.connParams) == MavLinkConnection.MAVLINK_CONNECTED;
+        return this.mConnParams != null
+                && mServiceClient.getConnectionStatus(this.mConnParams) == MavLinkConnection.MAVLINK_CONNECTED;
     }
 
     public boolean isConnecting(){
-        return this.connParams != null && mServiceClient.getConnectionStatus(this.connParams) == MavLinkConnection.MAVLINK_CONNECTING;
+        return this.mConnParams != null && mServiceClient.getConnectionStatus(this.mConnParams) == MavLinkConnection.MAVLINK_CONNECTING;
     }
 
     /**

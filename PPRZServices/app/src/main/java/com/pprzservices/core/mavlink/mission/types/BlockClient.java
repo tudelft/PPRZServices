@@ -1,6 +1,7 @@
 package com.pprzservices.core.mavlink.mission.types;
 
 import android.os.Handler;
+import android.os.RemoteException;
 import android.util.Log;
 
 import com.MAVLink.Messages.MAVLinkMessage;
@@ -26,26 +27,16 @@ public class BlockClient extends MissionManager {
 
     private short blockCount = 0;
 
-    private List<String> mBlocks = new ArrayList<String>();
-
-    private int mCurrentBlock = 0;
-
     public BlockClient(DroneClient client, Handler handler) {
         super(client, handler);
     }
-
-    public List<String> getBlocks() {return mBlocks; }
-
-    public int getCurrentBlock() { return mCurrentBlock; }
 
     @Override
     public void missionMsgHandler(MAVLinkMessage msg) {
         switch (state) {
             case STATE_IDLE: {
                 if (msg.msgid == msg_block_item.MAVLINK_MSG_ID_BLOCK_ITEM) {
-                    mCurrentBlock = ((msg_block_item) msg).seq;
-
-                    mClient.onDroneEvent(DroneInterfaces.DroneEventsType.CURRENT_BLOCK_UPDATED);
+                    mClient.getDrone().setCurrentBlock(((msg_block_item) msg).seq);
 
                     // Send acknowledgement
                     sendMissionAck();
@@ -55,22 +46,31 @@ public class BlockClient extends MissionManager {
 
             case STATE_REQUEST_LIST: {
                 if (msg.msgid == msg_block_count.MAVLINK_MSG_ID_BLOCK_COUNT) {
-                    // Stop the timeout thread
-                    stopTimeoutThread(new TimeoutRequestTimer());
-                    nRetries = 0;
+                    List<String> blocks = null;
+                    try {
+                        blocks = mClient.getDrone().getBlocks();
+                    } catch (RemoteException e) {
+                        // TODO: Handle remote exception
+                    }
 
-                    // Store the number of mission blocks
-                    blockCount = ((msg_block_count) msg).count;
+                    if (blocks != null) {
+                        // Stop the timeout thread
+                        stopTimeoutThread(new TimeoutRequestTimer());
+                        nRetries = 0;
 
-                    // Clear the current list
-                    mBlocks.clear();
+                        // Store the number of mission blocks
+                        blockCount = ((msg_block_count) msg).count;
 
-                    // Request the first mission block
-                    if (blockCount > 0) {
-                        requestItem((short) mBlocks.size());
+                        // Clear the current list
+                        blocks.clear();
 
-                        // Start the timeout thread
-                        startTimeoutThread(new TimeoutRequestTimer((short) mBlocks.size()));
+                        // Request the first mission block
+                        if (blockCount > 0) {
+                            requestItem((short) blocks.size());
+
+                            // Start the timeout thread
+                            startTimeoutThread(new TimeoutRequestTimer((short) blocks.size()));
+                        }
                     }
                 }
                 break;
@@ -78,29 +78,38 @@ public class BlockClient extends MissionManager {
 
             case STATE_REQUEST_ITEM: {
                 if (msg.msgid == msg_block_item.MAVLINK_MSG_ID_BLOCK_ITEM) {
-                    // Stop the timeout thread
-                    stopTimeoutThread(new TimeoutRequestTimer((short) mBlocks.size()));
-                    nRetries = 0;
+                    List<String> blocks = null;
+                    try {
+                        blocks = mClient.getDrone().getBlocks();
+                    } catch (RemoteException e) {
+                        // TODO: Handle remote exception
+                    }
 
-                    // Add the received block to the list of blocks
-                    msg_block_item block_item = (msg_block_item) msg;
-                    mBlocks.add(new String(Arrays.copyOf(block_item.name, block_item.len)));
+                    if (blocks != null) {
+                        // Stop the timeout thread
+                        stopTimeoutThread(new TimeoutRequestTimer((short) blocks.size()));
+                        nRetries = 0;
 
-                    if (mBlocks.size() < blockCount) {
-                        // Request next block
-                        requestItem((short) mBlocks.size());
+                        // Add the received block to the list of blocks
+                        msg_block_item block_item = (msg_block_item) msg;
+                        blocks.add(new String(Arrays.copyOf(block_item.name, block_item.len)));
 
-                        // Start the timeout thread
-                        startTimeoutThread(new TimeoutRequestTimer((short) mBlocks.size()));
-                    } else {
-                        // Set state to idle
-                        state = StateMachine.STATE_IDLE;
+                        if (blocks.size() < blockCount) {
+                            // Request next block
+                            requestItem((short) blocks.size());
 
-                        // Send acknowledgement
-                        sendMissionAck();
+                            // Start the timeout thread
+                            startTimeoutThread(new TimeoutRequestTimer((short) blocks.size()));
+                        } else {
+                            // Set state to idle
+                            state = StateMachine.STATE_IDLE;
 
-                        // Notify the drone client that the list of blocks is updated
-                        mClient.onDroneEvent(DroneInterfaces.DroneEventsType.MISSION_BLOCKS_UPDATED);
+                            // Send acknowledgement
+                            sendMissionAck();
+
+                            // Notify the drone client that the list of blocks is updated
+                            mClient.onDroneEvent(DroneInterfaces.DroneEventsType.MISSION_BLOCKS_UPDATED);
+                        }
                     }
                 }
                 break;

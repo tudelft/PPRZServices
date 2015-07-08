@@ -29,23 +29,21 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
 
     private static final String TAG = DroneClient.class.getSimpleName();
 
-    protected final Context context;
-    private final MavLinkClient mavLinkClient;
-    private final Drone drone;
-    private final MavLinkMsgHandler mavLinkMsgHandler;
-    private final ConnectionParameter connParams;
+    private final MavLinkClient mMavLinkClient;
+    private final Drone mDrone;
+    private final MavLinkMsgHandler mMavLinkMsgHandler;
+    private final ConnectionParameter mConnParams;
     private final MavLinkServiceClient mServiceClient;
 
     public DroneClient(Context context, ConnectionParameter connParams, MavLinkServiceClient serviceClient) {
-        this.context = context;
-        this.connParams = connParams;
-        this.drone = new Drone(this);
+        mConnParams = connParams;
+        mDrone = new Drone(this);
 
-        this.mavLinkMsgHandler = new MavLinkMsgHandler(this, new Handler(context.getMainLooper()));
+        mMavLinkMsgHandler = new MavLinkMsgHandler(this, new Handler(context.getMainLooper()));
 
-        this.mServiceClient = serviceClient;
-        
-        mavLinkClient = new MavLinkClient(context, this, connParams, mServiceClient);
+        mServiceClient = serviceClient;
+
+        mMavLinkClient = new MavLinkClient(context, this, connParams, mServiceClient);
     }
 
     public void destroy() {
@@ -53,13 +51,32 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
     }
 
     public void connect(ConnectionParameter connParams) {
-        if (!mavLinkClient.isConnected()) {
-        	mavLinkClient.openConnection();
+        if (!mMavLinkClient.isConnected()) {
+            mMavLinkClient.openConnection();
+
+            requestWpList();
+//            requestBlockList();
         }
     }
 
     public void disconnect() {
-    	mavLinkClient.toggleConnectionState();
+    	mMavLinkClient.toggleConnectionState();
+    }
+
+    public Drone getDrone() {
+        return mDrone;
+    }
+
+    public MavLinkClient getMavLinkClient() {
+        return mMavLinkClient;
+    }
+
+    public boolean isConnected() {
+        return mDrone.isConnected();
+    }
+
+    public ConnectionParameter getConnectionParameter() {
+        return mConnParams;
     }
 
     @Override
@@ -82,28 +99,12 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
         MAVLinkMessage receivedMsg = packet.unpack();
 
         // Handle the MAVLink message
-        this.mavLinkMsgHandler.receiveData(receivedMsg);
+        mMavLinkMsgHandler.receiveData(receivedMsg);
     }
 
     @Override
     public void onStreamError(String errorMsg) {
         /* TODO: Handle onStreamError. */
-    }
-
-    public Drone getDrone() {
-        return drone;
-    }
-    
-    public MavLinkClient getMavLinkClient() {
-    	return mavLinkClient;
-    }
-
-    public boolean isConnected() {
-        return drone.isConnected();
-    }
-
-    public ConnectionParameter getConnectionParameter() {
-        return connParams;
     }
 
 	@Override
@@ -115,27 +116,22 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
         }
 	}
 
+    // Request list of waypoints
     public void requestWpList() {
-        mavLinkMsgHandler.getWaypointClient().requestList();
+        mMavLinkMsgHandler.getWaypointClient().requestList();
     }
 
-    public List<Waypoint> getWaypoints() {
-        return mavLinkMsgHandler.getWaypointClient().getWaypoints();
+    // Write waypoint
+    public void writeWp(float lat, float lon, float alt, short seq) {
+        mMavLinkMsgHandler.getWaypointClient().sendItem(lat, lon, alt, seq);
     }
 
-    public void requestMissionBlockList() {
-        mavLinkMsgHandler.getBlockClient().requestList();
+    // Request list of blocks
+    public void requestBlockList() {
+        mMavLinkMsgHandler.getBlockClient().requestList();
     }
 
-    public List<String> getMissionBlocks() {
-        return mavLinkMsgHandler.getBlockClient().getBlocks();
-    }
-
-    public int getCurrentBlock() {
-        return mavLinkMsgHandler.getBlockClient().getCurrentBlock();
-    }
-
-    public void setMissionBlock(int id) {
-        mavLinkMsgHandler.getBlockClient().sendItem((short) id);
+    public void setCurrentBlock(short seq) {
+        mMavLinkMsgHandler.getBlockClient().sendItem(seq);
     }
 }

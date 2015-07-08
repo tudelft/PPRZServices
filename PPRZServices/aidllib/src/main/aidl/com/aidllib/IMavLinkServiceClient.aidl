@@ -6,7 +6,7 @@ import com.aidllib.IEventListener;
 import java.util.List;
 
 interface IMavLinkServiceClient {
-    Bundle getAttribute(String type);
+    Bundle getAttribute(String type); // the listener can retrieve data
 
     void addEventListener(String id, in IEventListener listener);
 
@@ -16,17 +16,17 @@ interface IMavLinkServiceClient {
 
     void disconnectDroneClient();
 
-    void onEvent(String type);
+    void onEvent(String type); // for calls by the listener
 
-    void requestWpList();
+    void onCallback(in Bundle carrier); // for calls by the listener with an optional argument
 
-    List<Waypoint> getWpList();
+    //void requestWpList();
 
-    void requestMissionBlockList();
+    //List<Waypoint> getWpList();
 
-    List<String> getMissionBlockList();
+    //void requestMissionBlockList(); --> onCallback
 
-    void onBlockSelected(int id);
+    //List<String> getMissionBlockList();
 
-    int getCurrentBlock();
+    //void onBlockSelected(int id); --> onCallback
 }

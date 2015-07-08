@@ -142,7 +142,7 @@
         android:layout_below="@+id/waypoint_count"
         android:text="@string/block_count" />
 
-    <Spinner
+    <!--Spinner
         android:id="@+id/block_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -168,13 +168,13 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="50dp"
         android:onClick="onWpButtonRequest"
-        android:text="@string/wp_button" />
+        android:text="@string/wp_button" /-->
 
     <Button
         android:id="@+id/connectButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/wpButton"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="50dp"
         android:onClick="onConnectButtonRequest"
