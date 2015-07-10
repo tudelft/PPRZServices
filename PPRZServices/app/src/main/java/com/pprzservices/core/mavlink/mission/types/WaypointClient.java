@@ -186,6 +186,8 @@ public class WaypointClient extends MissionManager{
         msg.y = lon;
         msg.z = alt;
         msg.seq = seq;
+		msg.target_system = mClient.getDrone().getSysid();
+		msg.target_component = mClient.getDrone().getCompid();
         mClient.getMavLinkClient().sendMavPacket(msg.pack());
 	}
 }
