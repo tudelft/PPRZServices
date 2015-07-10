@@ -46,6 +46,9 @@ public class MainActivity extends Activity {
 	IMavLinkServiceClient mServiceClient;
 	
 	private Button connectButton;
+
+	private Button wpButton;
+
 	private boolean isConnected;
 
 	private TextView serviceConn;
@@ -187,6 +190,9 @@ public class MainActivity extends Activity {
 		handler = new Handler();
 		
 		connectButton = (Button) findViewById(R.id.connectButton);
+
+		wpButton = (Button) findViewById(R.id.wpButton);
+
 		isConnected = false;
 
 		serviceConn = (TextView) findViewById(R.id.service_connection);
@@ -331,16 +337,20 @@ public class MainActivity extends Activity {
 		}
     }
 
-//	public void onWpButtonRequest(View view) {
-//		if (isConnected) {
-//			try {
-//				mServiceClient.requestWpList();
-//			} catch (RemoteException e) {
-//				// TODO: Handle exception
-//			}
-//		}
-//	}
-//
+	public void onWpButtonRequest(View view) {
+		if (isConnected) {
+			try {
+				Bundle carrier = new Bundle();
+				carrier.putString("TYPE", "WRITE_WP");
+				Waypoint waypoint = new Waypoint((float)0., (float)0., (float)0., 3, (byte)0, (byte)0);
+				carrier.putParcelable("WP", waypoint);
+				mServiceClient.onCallback(carrier);
+			} catch (RemoteException e) {
+				// TODO: Handle exception
+			}
+		}
+	}
+
 //	public void onBlockButtonRequest(View view) {
 //		if (isConnected) {
 //			try {
@@ -381,8 +391,8 @@ public class MainActivity extends Activity {
 			public void run() {
 				try {
 					Altitude mAltitude = getAttribute("ALTITUDE");					
-					altitude.setText(getString(R.string.altitude) + " " + mAltitude.getAltitude());
-					targetAltitude.setText(getString(R.string.target_altitude) + " " + mAltitude.getTargetAltitude());
+					altitude.setText(getString(R.string.altitude) + " " + String.format("%.2f", mAltitude.getAltitude()));
+					targetAltitude.setText(getString(R.string.target_altitude) + " " + String.format("%.2f", mAltitude.getTargetAltitude()));
 				} catch (Throwable t) {
 					Log.e(TAG, "Error while updating the altitude", t);
 				}
@@ -399,10 +409,10 @@ public class MainActivity extends Activity {
 			public void run() {
 				try {
 					Speed mSpeed = getAttribute("SPEED");					
-					groundSpeed.setText(getString(R.string.ground_speed) + " " + mSpeed.getGroundSpeed());
-					airSpeed.setText(getString(R.string.air_speed) + " " + mSpeed.getAirspeed());
-					climbSpeed.setText(getString(R.string.climb_speed) + " " + mSpeed.getClimbSpeed());
-					targetSpeed.setText(getString(R.string.target_speed) + " " + mSpeed.getTargetSpeed());
+					groundSpeed.setText(getString(R.string.ground_speed) + " " + String.format("%.2f", mSpeed.getGroundSpeed()));
+					airSpeed.setText(getString(R.string.air_speed) + " " + String.format("%.2f", mSpeed.getAirspeed()));
+					climbSpeed.setText(getString(R.string.climb_speed) + " " + String.format("%.2f", mSpeed.getClimbSpeed()));
+					targetSpeed.setText(getString(R.string.target_speed) + " " + String.format("%.2f", mSpeed.getTargetSpeed()));
 				} catch (Throwable t) {
 					Log.e(TAG, "Error while updating the speed", t);
 				}
@@ -435,9 +445,9 @@ public class MainActivity extends Activity {
 			public void run() {
 				try {
 					Position mPosition = getAttribute("POSITION");
-					lat.setText(getString(R.string.roll) + " " + String.format("%d", mPosition.getLat()));
-					lon.setText(getString(R.string.pitch) + " " + String.format("%d", mPosition.getLon()));
-					gpsAlt.setText(getString(R.string.yaw) + " " + String.format("%d", mPosition.getAlt()));
+					lat.setText(getString(R.string.lat) + " " + String.format("%d", mPosition.getLat()));
+					lon.setText(getString(R.string.lon) + " " + String.format("%d", mPosition.getLon()));
+					gpsAlt.setText(getString(R.string.gps_alt) + " " + String.format("%d", mPosition.getAlt()));
 				} catch (Throwable t) {
 					Log.e(TAG, "Error while updating the position", t);
 				}

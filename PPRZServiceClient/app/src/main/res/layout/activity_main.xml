@@ -158,17 +158,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="19dp"
         android:onClick="onBlockButtonRequest"
-        android:text="@string/block_button" />
-
-    <Button
-        android:id="@+id/wpButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/blockButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp"
-        android:onClick="onWpButtonRequest"
-        android:text="@string/wp_button" /-->
+        android:text="@string/block_button" /-->
 
     <Button
         android:id="@+id/connectButton"
@@ -179,4 +169,14 @@
         android:layout_marginBottom="50dp"
         android:onClick="onConnectButtonRequest"
         android:text="@string/connect_button" />
+
+    <Button
+        android:id="@+id/wpButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/connectButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:onClick="onWpButtonRequest"
+        android:text="@string/wp_button" />
 </RelativeLayout>

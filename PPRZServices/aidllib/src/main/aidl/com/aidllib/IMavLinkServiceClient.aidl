@@ -1,7 +1,6 @@
 package com.aidllib;
 
 import com.aidllib.core.ConnectionParameter;
-import com.aidllib.core.mavlink.waypoints.Waypoint;
 import com.aidllib.IEventListener;
 import java.util.List;
 

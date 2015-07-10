@@ -1,5 +1,6 @@
 package com.pprzservices.service;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.RemoteException;
@@ -23,7 +24,6 @@ import com.pprzservices.core.mavlink.connection.MavLinkConnectionListener;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -188,6 +188,8 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 
         final Drone drone = mDroneClient.getDrone();
 
+        carrier.setClassLoader(Waypoint.class.getClassLoader());
+
         switch (carrier.getString("TYPE")) {
             case "REQUEST_WP_LIST": {
                 mDroneClient.requestWpList();
@@ -195,8 +197,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
             }
 
             case "WRITE_WP": {
-                carrier.setClassLoader(Waypoint.class.getClassLoader());
-                Waypoint waypoint = carrier.getParcelable("WAYPOINT");
+                Waypoint waypoint = carrier.getParcelable("WP");
                 mDroneClient.writeWp(waypoint.getLat(), waypoint.getLon(), waypoint.getAlt(), (short)waypoint.getSeq());
                 break;
             }

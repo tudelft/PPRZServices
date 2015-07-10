@@ -55,7 +55,7 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
             mMavLinkClient.openConnection();
 
             requestWpList();
-//            requestBlockList();
+            requestBlockList();
         }
     }
 
