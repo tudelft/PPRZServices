@@ -177,6 +177,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 
 	@Override
 	public void onEvent(String type) throws RemoteException {
+
 		for(IEventListener listener : mListeners.values())
 		{
 			listener.onEvent(type);
@@ -209,6 +210,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 
             case "BLOCK_SELECTED": {
                 drone.setCurrentBlock(carrier.getShort("SEQ"));
+                mDroneClient.setCurrentBlock(carrier.getShort("SEQ"));
                 break;
             }
         }
