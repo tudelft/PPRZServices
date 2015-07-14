@@ -269,9 +269,23 @@ public class MainActivity extends Activity {
 			Log.d(TAG, "Service was bound");
 		}
     }
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		//Disconnect from service
+		try{
+			if (isConnected) {
+				mServiceClient.disconnectDroneClient();
+			}
+		} catch(RemoteException e) {
+			Log.e(TAG, "Failed to disconnect from service while closing application", e);
+		}
+	}
     
     @Override
     public void onDestroy() {
+        super.onDestroy();;
     	try {
 			mServiceClient.removeEventListener(TAG);
 		} catch (RemoteException e) {
