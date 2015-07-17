@@ -99,7 +99,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			}
 			
 			case "ALTITUDE": {
-				carrier.putParcelable(type, new Altitude(drone.getAltitude(), drone.getTargetAltitude()));
+				carrier.putParcelable(type, new Altitude(drone.getAltitude(), drone.getTargetAltitude(), drone.getAGL()));
 				break;
 			}
 			

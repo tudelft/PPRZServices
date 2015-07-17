@@ -9,18 +9,21 @@ import android.os.Parcelable;
 public class Altitude implements Parcelable {
 	private double mAltitude;
 	private double mTargetAltitude;
+	private double mAGL;
 	
 	public Altitude() {
 	}
 	
-	public Altitude(double altitude, double targetAltitude) {
+	public Altitude(double altitude, double targetAltitude, double AGL) {
 		mAltitude = altitude;
 		mTargetAltitude = targetAltitude;
+		mAGL = AGL;
 	}
 	
 	public Altitude(Parcel in) {
 		mAltitude = in.readDouble();
 		mTargetAltitude = in.readDouble();
+        mAGL = in.readDouble();
 	}
 	
 	public void setAltitude(double altitude) {
@@ -30,6 +33,8 @@ public class Altitude implements Parcelable {
 	public void setTargetAltitude(double targetAltitude) {
 		mTargetAltitude = targetAltitude;
 	}
+
+	public void setAGL(double AGL) {mAGL = AGL; }
 	
 	public double getAltitude() {
 		return mAltitude;
@@ -38,6 +43,8 @@ public class Altitude implements Parcelable {
 	public double getTargetAltitude() {
 		return mTargetAltitude;
 	}
+
+	public double getAGL() {return mAGL; }
 
 	@Override
 	public int describeContents() {
@@ -48,6 +55,7 @@ public class Altitude implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeDouble(mAltitude);
 		dest.writeDouble(mTargetAltitude);
+        dest.writeDouble(mAGL);
 	}
 	
 	public static final Parcelable.Creator<Altitude> CREATOR = new Parcelable.Creator<Altitude>() {

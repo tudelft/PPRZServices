@@ -15,13 +15,11 @@ public class Altitude {
         return targetAltitude;
     }
     
-    public double getAGL()
-    {
+    public double getAGL() {
         return AGL;
     }
 
-    public void setAltitude(double altitude)
-    {
+    public void setAltitude(double altitude) {
         this.altitude = altitude;
     }
 
