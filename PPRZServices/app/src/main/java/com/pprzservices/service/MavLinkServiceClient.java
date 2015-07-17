@@ -120,7 +120,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			
 			case "POSITION": {
 				carrier.putParcelable(type, new Position(drone.getSatVisible(), drone.getTimeStamp(), drone.getLat(), drone.getLon(), drone.getAlt(), drone.getHdg()));
-				break;
+                break;
 			}
 
 			case "WAYPOINTS": {
@@ -209,7 +209,6 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
             }
 
             case "BLOCK_SELECTED": {
-                drone.setCurrentBlock(carrier.getShort("SEQ"));
                 mDroneClient.setCurrentBlock(carrier.getShort("SEQ"));
                 break;
             }
