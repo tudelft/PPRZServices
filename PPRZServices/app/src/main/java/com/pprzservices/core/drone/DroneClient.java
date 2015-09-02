@@ -110,7 +110,7 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
 	@Override
 	public void onDroneEvent(DroneEventsType event) {
 		try {
-			mServiceClient.onEvent(event.toString());
+			mServiceClient.onEvent(event.toString(), mDrone.getSysid());
         } catch (RemoteException e) {
         	/* TODO: Handle remote exception */
         }

@@ -1,6 +1,7 @@
 package com.pprzservices.core.mavlink;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.MAVLink.MAVLinkPacket;
 import com.aidllib.core.ConnectionParameter;

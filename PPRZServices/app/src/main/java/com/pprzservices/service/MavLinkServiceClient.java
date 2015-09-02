@@ -41,6 +41,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 
     private final SoftReference<MavLinkService> mServiceRef;
 
+    //TODO: multiply in a list
     private DroneClient mDroneClient;
     
     public MavLinkServiceClient(MavLinkService service) {
@@ -87,11 +88,11 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
     }
 
 	@Override
-	public Bundle getAttribute(String type) throws RemoteException {		
+	public Bundle getAttribute(String type, int sysId) throws RemoteException {
 		Bundle carrier = new Bundle();
         
 		final Drone drone = mDroneClient.getDrone();
-		
+
 		switch (type) {
 			case "HEARTBEAT": {
 				carrier.putParcelable(type, new Heartbeat(drone.getSysid(), drone.getCompid()));
@@ -124,11 +125,13 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			}
 
 			case "WAYPOINTS": {
+                Log.d("TEST","GETWAYPOINTS");
                 carrier.putParcelableArrayList(type, (ArrayList<? extends Parcelable>) drone.getWaypoints());
 				break;
 			}
 
 			case "CURRENT_BLOCK": {
+                Log.d("TEST", "currentblock");
 			    carrier.putInt(type, drone.getCurrentBlock());
 				break;
 			}
@@ -162,7 +165,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
     public void connectDroneClient(ConnectionParameter connParams) throws RemoteException  {
         if (connParams == null)
             return;
-
+//TODO: multiply
         mDroneClient = new DroneClient(getService().getApplicationContext(), connParams, this);   
         mDroneClient.connect(connParams);
     }
@@ -176,11 +179,10 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
     }
 
 	@Override
-	public void onEvent(String type) throws RemoteException {
-
+	public void onEvent(String type, int sysId) throws RemoteException {
 		for(IEventListener listener : mListeners.values())
 		{
-			listener.onEvent(type);
+			listener.onEvent(type,sysId);
 		}
 	}
 
@@ -198,6 +200,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
             }
 
             case "WRITE_WP": {
+                Log.d("TEST", "requestWAYPOINTS");
                 Waypoint waypoint = carrier.getParcelable("WP");
                 mDroneClient.writeWp(waypoint.getLat(), waypoint.getLon(), waypoint.getAlt(), (short)waypoint.getSeq());
                 break;

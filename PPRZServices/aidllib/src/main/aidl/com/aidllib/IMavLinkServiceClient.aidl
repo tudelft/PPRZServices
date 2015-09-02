@@ -5,7 +5,8 @@ import com.aidllib.IEventListener;
 import java.util.List;
 
 interface IMavLinkServiceClient {
-    Bundle getAttribute(String type); // the listener can retrieve data
+
+    Bundle getAttribute(String type, int sysId); // the listener can retrieve data
 
     void addEventListener(String id, in IEventListener listener);
 
@@ -15,7 +16,7 @@ interface IMavLinkServiceClient {
 
     void disconnectDroneClient();
 
-    void onEvent(String type); // for calls by the listener
+    void onEvent(String type, int sysId); // for calls by the listener
 
     void onCallback(in Bundle carrier); // for calls by the listener with an optional argument
 

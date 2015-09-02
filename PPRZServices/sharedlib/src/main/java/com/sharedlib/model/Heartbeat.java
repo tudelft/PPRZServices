@@ -12,8 +12,8 @@ public class Heartbeat {
     public static final int INVALID_MAVLINK_VERSION = -1;
 
     public HeartbeatState heartbeatState = HeartbeatState.FIRST_HEARTBEAT;
-    private byte sysid = 1;
-    private byte compid = 1;
+    private byte sysid = -1;
+    private byte compid = -1;
 
     /**
      * Stores the version of the mavlink protocol.
