@@ -17,7 +17,6 @@ import com.pprzservices.service.MavLinkService;
 
 import android.os.Handler;
 import android.os.RemoteException;
-import android.util.Log;
 
 /**
  * WaypointClient.java - Implements the MAVLink MissionLib waypoint protocol
@@ -43,7 +42,6 @@ public class WaypointClient extends MissionManager{
     		}
 
 			case STATE_REQUEST_LIST: {
-				Log.d("TEST", "requestListWAYPOINTS");
     			if (msg.msgid == msg_mission_count.MAVLINK_MSG_ID_MISSION_COUNT) {
 					List<Waypoint> waypoints = null;
 					try {
@@ -77,9 +75,7 @@ public class WaypointClient extends MissionManager{
     		}
 
     		case STATE_REQUEST_ITEM: {
-				Log.d("TEST", "requestitemWAYPOINTS");
     			if (msg.msgid == msg_mission_item.MAVLINK_MSG_ID_MISSION_ITEM) {
-					Log.d("TEST", "requestitem2WAYPOINTS");
 					List<Waypoint> waypoints = null;
 					try {
 						waypoints = mClient.getDrone().getWaypoints();
@@ -121,14 +117,12 @@ public class WaypointClient extends MissionManager{
     		}
     		
     		case STATE_WRITE_COUNT: {
-				Log.d("TEST", "writecountWAYPOINTS");
     			// TODO: Implement write list count to MAV
     			
     			break;
     		}
     		
     		case STATE_WRITE_ITEM: {
-				Log.d("TEST", "writeitemWAYPOINTS");
                 if (msg.msgid == msg_mission_ack.MAVLINK_MSG_ID_MISSION_ACK) {
                     // Stop the timeout thread
                     stopTimeoutThread(new TimeoutRequestTimer());

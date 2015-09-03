@@ -72,7 +72,6 @@ public class MavLinkService extends Service {
             final Bundle paramsBundle = connParams.getParamsBundle();
 
             switch (connectionType) {
-
                 case MavLinkConnectionTypes.MAVLINK_CONNECTION_UDP: {
                     final int udpServerPort = paramsBundle.getInt("udp_port",
                     		MavLinkConnectionTypes.MAVLINK_CONNECTION_UDP_PORT);

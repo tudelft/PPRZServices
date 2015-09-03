@@ -21,6 +21,9 @@ import com.pprzservices.core.drone.Drone;
 import com.pprzservices.core.drone.DroneClient;
 import com.pprzservices.core.mavlink.connection.MavLinkConnection;
 import com.pprzservices.core.mavlink.connection.MavLinkConnectionListener;
+import com.pprzservices.core.mavlink.connection.MavLinkConnectionTypes;
+import com.pprzservices.core.mavlink.connection.types.BluetoothConnection;
+import com.pprzservices.core.mavlink.connection.types.UdpConnection;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
@@ -125,13 +128,11 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			}
 
 			case "WAYPOINTS": {
-                Log.d("TEST","GETWAYPOINTS");
                 carrier.putParcelableArrayList(type, (ArrayList<? extends Parcelable>) drone.getWaypoints());
 				break;
 			}
 
 			case "CURRENT_BLOCK": {
-                Log.d("TEST", "currentblock");
 			    carrier.putInt(type, drone.getCurrentBlock());
 				break;
 			}
@@ -165,9 +166,44 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
     public void connectDroneClient(ConnectionParameter connParams) throws RemoteException  {
         if (connParams == null)
             return;
-//TODO: multiply
-        mDroneClient = new DroneClient(getService().getApplicationContext(), connParams, this);   
-        mDroneClient.connect(connParams);
+
+        /* Take the incoming connectionparameters and put all port numbers in a single connection parameter package per port/drone. They will be sent to their droneclient. */
+        // Get connection type
+        final int connectionType = connParams.getConnectionType();
+
+        switch (connectionType) {
+            case MavLinkConnectionTypes.MAVLINK_CONNECTION_UDP: {
+                // Get params bundle
+                final Bundle paramsBundle = connParams.getParamsBundle();
+                //Get a list of udp ports that should be connected to
+                final ArrayList<Integer> udpServerPortList = paramsBundle.getIntegerArrayList("udp_port");
+
+                Bundle extraParams = new Bundle();
+                //Loop over the list of udp ports, put them in a new connectionParameter package and create for every one of them a new droneClient.
+                for (int i = 0; i < udpServerPortList.size(); i++) {
+                    //TODO: multiply
+                    //temporarily only take the first port
+                    if (i == 0) {
+                        int udpServerPort = udpServerPortList.get(i);
+                        extraParams.putInt("udp_port", udpServerPort);
+                        connParams = new ConnectionParameter(connectionType, extraParams);
+                        mDroneClient = new DroneClient(getService().getApplicationContext(), connParams, this);
+                        mDroneClient.connect(connParams);
+                    }
+                }
+                break;
+            }
+
+            case MavLinkConnectionTypes.MAVLINK_CONNECTION_BLUETOOTH: {
+                mDroneClient = new DroneClient(getService().getApplicationContext(), connParams, this);
+                mDroneClient.connect(connParams);
+                break;
+            }
+
+            default: {
+                return;
+            }
+        }
     }
 
 	@Override
@@ -200,7 +236,6 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
             }
 
             case "WRITE_WP": {
-                Log.d("TEST", "requestWAYPOINTS");
                 Waypoint waypoint = carrier.getParcelable("WP");
                 mDroneClient.writeWp(waypoint.getLat(), waypoint.getLon(), waypoint.getAlt(), (short)waypoint.getSeq());
                 break;
