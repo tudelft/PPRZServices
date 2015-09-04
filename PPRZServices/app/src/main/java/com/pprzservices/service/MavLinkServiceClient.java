@@ -1,10 +1,10 @@
 package com.pprzservices.service;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.MAVLink.MAVLinkPacket;
 import com.aidllib.IEventListener;
@@ -22,8 +22,6 @@ import com.pprzservices.core.drone.DroneClient;
 import com.pprzservices.core.mavlink.connection.MavLinkConnection;
 import com.pprzservices.core.mavlink.connection.MavLinkConnectionListener;
 import com.pprzservices.core.mavlink.connection.MavLinkConnectionTypes;
-import com.pprzservices.core.mavlink.connection.types.BluetoothConnection;
-import com.pprzservices.core.mavlink.connection.types.UdpConnection;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
@@ -44,9 +42,8 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 
     private final SoftReference<MavLinkService> mServiceRef;
 
-    //TODO: multiply in a list
-    private DroneClient mDroneClient;
-    
+    private SparseArray<DroneClient> mDroneClients = new SparseArray<>();
+
     public MavLinkServiceClient(MavLinkService service) {
         mServiceRef = new SoftReference<>(service);
     }
@@ -93,8 +90,8 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 	@Override
 	public Bundle getAttribute(String type, int sysId) throws RemoteException {
 		Bundle carrier = new Bundle();
-        
-		final Drone drone = mDroneClient.getDrone();
+
+		final Drone drone = mDroneClients.get(sysId).getDrone();
 
 		switch (type) {
 			case "HEARTBEAT": {
@@ -167,7 +164,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
         if (connParams == null)
             return;
 
-        /* Take the incoming connectionparameters and put all port numbers in a single connection parameter package per port/drone. They will be sent to their droneclient. */
+        /* Take the incoming connection parameters and put all port numbers in a single connection parameter package per port/drone. They will be sent to their droneclient. */
         // Get connection type
         final int connectionType = connParams.getConnectionType();
 
@@ -177,26 +174,23 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
                 final Bundle paramsBundle = connParams.getParamsBundle();
                 //Get a list of udp ports that should be connected to
                 final ArrayList<Integer> udpServerPortList = paramsBundle.getIntegerArrayList("udp_port");
+                //Get a list of the system ids that are used (same order as the udp port list)
+                final ArrayList<Integer> sysIdList = paramsBundle.getIntegerArrayList("sysIds");
 
-                Bundle extraParams = new Bundle();
                 //Loop over the list of udp ports, put them in a new connectionParameter package and create for every one of them a new droneClient.
                 for (int i = 0; i < udpServerPortList.size(); i++) {
-                    //TODO: multiply
-                    //temporarily only take the first port
-                    if (i == 0) {
-                        int udpServerPort = udpServerPortList.get(i);
-                        extraParams.putInt("udp_port", udpServerPort);
-                        connParams = new ConnectionParameter(connectionType, extraParams);
-                        mDroneClient = new DroneClient(getService().getApplicationContext(), connParams, this);
-                        mDroneClient.connect(connParams);
-                    }
+                    Bundle extraParams = new Bundle();
+                    extraParams.putInt("udp_port", udpServerPortList.get(i));
+                    connParams = new ConnectionParameter(connectionType, extraParams);
+                    mDroneClients.put(sysIdList.get(i), new DroneClient(getService().getApplicationContext(), connParams, this));
+                    mDroneClients.get(sysIdList.get(i)).connect(connParams);
                 }
                 break;
             }
 
             case MavLinkConnectionTypes.MAVLINK_CONNECTION_BLUETOOTH: {
-                mDroneClient = new DroneClient(getService().getApplicationContext(), connParams, this);
-                mDroneClient.connect(connParams);
+                mDroneClients.put(0,new DroneClient(getService().getApplicationContext(), connParams, this));
+                mDroneClients.get(0).connect(connParams);
                 break;
             }
 
@@ -208,46 +202,48 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 
 	@Override
     public void disconnectDroneClient() throws RemoteException  {
-        if (mDroneClient == null)
-            return;
-
-        mDroneClient.disconnect();
+        for(int i=0; i<mDroneClients.size(); i++) {
+//            mDroneClients.get(mDroneClients.keyAt(i)).disconnect();
+            mDroneClients.get(mDroneClients.keyAt(i)).destroy();
+        }
+        mDroneClients.clear();
     }
 
 	@Override
 	public void onEvent(String type, int sysId) throws RemoteException {
-		for(IEventListener listener : mListeners.values())
-		{
-			listener.onEvent(type,sysId);
-		}
+        if(sysId!=0) {
+            for (IEventListener listener : mListeners.values()) {
+                listener.onEvent(type, sysId);
+            }
+        }
 	}
 
     @Override
-    public void onCallback(Bundle carrier) {
-
-        final Drone drone = mDroneClient.getDrone();
-
+    public void onCallback(Bundle carrier, int sysId) {
         carrier.setClassLoader(Waypoint.class.getClassLoader());
-
         switch (carrier.getString("TYPE")) {
             case "REQUEST_WP_LIST": {
-                mDroneClient.requestWpList();
+                for(int i=0; i<mDroneClients.size(); i++) {
+                    mDroneClients.get(mDroneClients.keyAt(i)).requestWpList();
+                }
                 break;
             }
 
             case "WRITE_WP": {
                 Waypoint waypoint = carrier.getParcelable("WP");
-                mDroneClient.writeWp(waypoint.getLat(), waypoint.getLon(), waypoint.getAlt(), (short)waypoint.getSeq());
+                mDroneClients.get(sysId).writeWp(waypoint.getLat(), waypoint.getLon(), waypoint.getAlt(), (short) waypoint.getSeq());
                 break;
             }
 
             case "REQUEST_BLOCK_LIST": {
-                mDroneClient.requestBlockList();
+                for(int i=0; i<mDroneClients.size(); i++) {
+                    mDroneClients.get(mDroneClients.keyAt(i)).requestBlockList();
+                }
                 break;
             }
 
             case "BLOCK_SELECTED": {
-                mDroneClient.setCurrentBlock(carrier.getShort("SEQ"));
+                mDroneClients.get(sysId).setCurrentBlock(carrier.getShort("SEQ"));
                 break;
             }
         }

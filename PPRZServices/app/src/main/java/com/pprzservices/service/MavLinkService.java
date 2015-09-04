@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.aidllib.core.ConnectionParameter;
 import com.pprzservices.core.mavlink.connection.MavLinkConnection;

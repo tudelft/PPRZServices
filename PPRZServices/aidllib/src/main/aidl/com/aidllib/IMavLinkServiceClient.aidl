@@ -18,7 +18,7 @@ interface IMavLinkServiceClient {
 
     void onEvent(String type, int sysId); // for calls by the listener
 
-    void onCallback(in Bundle carrier); // for calls by the listener with an optional argument
+    void onCallback(in Bundle carrier, int sysId); // for calls by the listener with an optional argument
 
     //void requestWpList();
 

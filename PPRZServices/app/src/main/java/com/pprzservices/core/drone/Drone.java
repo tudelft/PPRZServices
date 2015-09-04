@@ -1,6 +1,7 @@
 package com.pprzservices.core.drone;
 
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.MAVLink.common.msg_heartbeat;
 import com.aidllib.core.mavlink.waypoints.Waypoint;
