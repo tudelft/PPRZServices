@@ -203,7 +203,6 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 	@Override
     public void disconnectDroneClient() throws RemoteException  {
         for(int i=0; i<mDroneClients.size(); i++) {
-//            mDroneClients.get(mDroneClients.keyAt(i)).disconnect();
             mDroneClients.get(mDroneClients.keyAt(i)).destroy();
         }
         mDroneClients.clear();
@@ -244,6 +243,14 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 
             case "BLOCK_SELECTED": {
                 mDroneClients.get(sysId).setCurrentBlock(carrier.getShort("SEQ"));
+                break;
+            }
+
+            case "REQUEST_TAKE_OFF": {
+                //Activate the selected block (take-off block)
+                mDroneClients.get(sysId).setCurrentBlock(carrier.getShort("SEQ"));
+                //Set launch mode to active
+//                mDroneClients.get(sysId).commandLaunch(); //NOT USED BECAUSE FLIGHT PLAN SETS THE LAUNCH PARAMETER TO 1 AT TAKE-OFF BLOCK
                 break;
             }
         }

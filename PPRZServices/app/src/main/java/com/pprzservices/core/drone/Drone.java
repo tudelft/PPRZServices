@@ -209,6 +209,7 @@ public class Drone {
     }
 
     public void setCurrentBlock(int currentBlock) {
+        Log.d("currentBlock",String.valueOf(currentBlock)+"-ac"+String.valueOf(getSysid()));
         mCurrentBlock = currentBlock;
         mClient.onDroneEvent(DroneInterfaces.DroneEventsType.CURRENT_BLOCK_UPDATED);
     }

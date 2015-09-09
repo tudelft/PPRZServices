@@ -126,6 +126,11 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
         mMavLinkMsgHandler.getWaypointClient().sendItem(lat, lon, alt, seq);
     }
 
+    //Enable launch mode
+    public void commandLaunch() {
+        mMavLinkMsgHandler.getCommandClient().launch();
+    }
+
     // Request list of blocks
     public void requestBlockList() {
         mMavLinkMsgHandler.getBlockClient().requestList();

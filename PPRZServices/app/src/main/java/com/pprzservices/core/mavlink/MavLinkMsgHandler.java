@@ -13,6 +13,7 @@ import com.MAVLink.enums.MAV_MODE_FLAG;
 import com.MAVLink.enums.MAV_STATE;
 import com.pprzservices.core.drone.DroneClient;
 import com.pprzservices.core.mavlink.mission.types.BlockClient;
+import com.pprzservices.core.mavlink.mission.types.CommandClient;
 import com.pprzservices.core.mavlink.mission.types.WaypointClient;
 
 public class MavLinkMsgHandler {
@@ -27,6 +28,8 @@ public class MavLinkMsgHandler {
 
     private BlockClient mBlockClient;
 
+    private CommandClient mCommandClient;
+
     public MavLinkMsgHandler(DroneClient droneClient, Handler handler) {
         mDroneClient = droneClient;
 
@@ -35,6 +38,8 @@ public class MavLinkMsgHandler {
         mWaypointClient = new WaypointClient(mDroneClient, mHandler);
 
         mBlockClient = new BlockClient(mDroneClient, mHandler);
+
+        mCommandClient = new CommandClient(mDroneClient, mHandler);
     }
 
     public WaypointClient getWaypointClient() {
@@ -44,6 +49,8 @@ public class MavLinkMsgHandler {
     public BlockClient getBlockClient() {
         return mBlockClient;
     }
+
+    public CommandClient getCommandClient() {return mCommandClient; }
 
     public void receiveData(MAVLinkMessage msg)
     {
