@@ -16,12 +16,14 @@ import com.aidllib.core.model.Attitude;
 import com.aidllib.core.model.Battery;
 import com.aidllib.core.model.Position;
 import com.aidllib.core.model.Speed;
+import com.aidllib.core.model.State;
 import com.aidllib.core.model.Heartbeat;
 import com.pprzservices.core.drone.Drone;
 import com.pprzservices.core.drone.DroneClient;
 import com.pprzservices.core.mavlink.connection.MavLinkConnection;
 import com.pprzservices.core.mavlink.connection.MavLinkConnectionListener;
 import com.pprzservices.core.mavlink.connection.MavLinkConnectionTypes;
+
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
@@ -123,6 +125,11 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 				carrier.putParcelable(type, new Position(drone.getSatVisible(), drone.getTimeStamp(), drone.getLat(), drone.getLon(), drone.getAlt(), drone.getHdg()));
                 break;
 			}
+
+            case "STATE": {
+                carrier.putParcelable(type, new State(drone.isArmed(),drone.isFlying()));
+                break;
+            }
 
 			case "WAYPOINTS": {
                 carrier.putParcelableArrayList(type, (ArrayList<? extends Parcelable>) drone.getWaypoints());

@@ -24,19 +24,19 @@ public class Drone {
     boolean IS_CONNECTED = false;
 
 	private final State state = new State();
-    
+
 	private final DroneClient mClient;
-	
+
 	private final Attitude mAttitude = new Attitude();
-	
+
 	private final Altitude mAltitude = new Altitude();
-	
+
 	private final Speed mSpeed = new Speed();
-	
+
 	private final Heartbeat mHeartbeat = new Heartbeat();
-	
+
 	private final Battery mBattery = new Battery();
-	
+
 	private final Position mPosition = new Position();
 
     private List<Waypoint> mWaypoints = new ArrayList<Waypoint>();
@@ -57,6 +57,14 @@ public class Drone {
 
     public State getState() {
         return state;
+    }
+
+    public boolean isArmed() {
+        return state.isArmed();
+    }
+
+    public boolean isFlying() {
+        return state.isFlying();
     }
     
     public double getAltitude() {
