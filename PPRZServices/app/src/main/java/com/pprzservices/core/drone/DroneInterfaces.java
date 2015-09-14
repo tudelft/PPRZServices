@@ -45,6 +45,9 @@ public class DroneInterfaces {
         // List of waypoints updated
         WAYPOINTS_UPDATED,
 
+        // Waypoint received by drone
+        WAYPOINT_RECEIVED,
+
         // List of mission blocks updated
         MISSION_BLOCKS_UPDATED,
 

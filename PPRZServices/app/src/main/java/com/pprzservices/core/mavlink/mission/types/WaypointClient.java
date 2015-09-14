@@ -107,9 +107,6 @@ public class WaypointClient extends MissionManager{
 
                             // Notify the drone client that the list of waypoints is updated
                             mClient.onDroneEvent(DroneInterfaces.DroneEventsType.WAYPOINTS_UPDATED);
-
-                            // TODO: Currently changing a single waypoints implies reloading the entire list
-
                         }
                     }
     			}
@@ -129,6 +126,9 @@ public class WaypointClient extends MissionManager{
 
                     // Set state to idle
                     state = StateMachine.STATE_IDLE;
+
+                    // Notify the drone client that the waypoint has been received by the drone
+                    mClient.onDroneEvent(DroneInterfaces.DroneEventsType.WAYPOINT_RECEIVED);
                 }
     			break;
     		}
@@ -179,6 +179,8 @@ public class WaypointClient extends MissionManager{
     }
 
     public void sendItem(float lat, float lon, float alt, short seq) {
+		state = StateMachine.STATE_WRITE_ITEM;
+
         msg_mission_item msg = new msg_mission_item();
         msg.x = lat;
         msg.y = lon;
@@ -186,6 +188,10 @@ public class WaypointClient extends MissionManager{
         msg.seq = seq;
 		msg.target_system = mClient.getDrone().getSysid();
 		msg.target_component = mClient.getDrone().getCompid();
+
+		// Start the timeout thread
+		startTimeoutThread(new TimeoutRequestTimer());
+
         mClient.getMavLinkClient().sendMavPacket(msg.pack());
 	}
 }

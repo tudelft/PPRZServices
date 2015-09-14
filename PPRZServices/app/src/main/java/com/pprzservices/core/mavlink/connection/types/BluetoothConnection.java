@@ -150,7 +150,7 @@ public class BluetoothConnection extends MavLinkConnection {
             mBluetoothGatt = device.connectGatt(mContext, false, mGattCallback);
 
             // Stop scanning after the first device has been detected
-            scanLeDevice(false);// will stop after first device detection
+            scanLeDevice(false); // will stop after first device detection
         }
     }
 

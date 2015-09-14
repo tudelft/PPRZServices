@@ -58,9 +58,6 @@ public abstract class MissionManager {
             if (nRetries++ < RETRIES) {
                 switch(state) {
                     case STATE_REQUEST_LIST: {
-
-//                        Log.d(TAG, "Retrying to request list of waypoints... (" + nRetries + ")");
-
                         // Request the list of waypoints
                         sendRequestList();
 
@@ -71,9 +68,6 @@ public abstract class MissionManager {
                     }
 
                     case STATE_REQUEST_ITEM: {
-
-//                        Log.d(TAG, "Retrying to request waypoint... (" + nRetries + ")");
-
                         // Request next waypoint
                         requestItem(mSeq);
 
