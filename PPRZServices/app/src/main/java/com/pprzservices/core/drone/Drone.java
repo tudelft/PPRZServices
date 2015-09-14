@@ -1,7 +1,6 @@
 package com.pprzservices.core.drone;
 
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.MAVLink.common.msg_heartbeat;
 import com.aidllib.core.mavlink.waypoints.Waypoint;
@@ -217,7 +216,6 @@ public class Drone {
     }
 
     public void setCurrentBlock(int currentBlock) {
-        Log.d("currentBlock",String.valueOf(currentBlock)+"-ac"+String.valueOf(getSysid()));
         mCurrentBlock = currentBlock;
         mClient.onDroneEvent(DroneInterfaces.DroneEventsType.CURRENT_BLOCK_UPDATED);
     }

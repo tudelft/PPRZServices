@@ -1,10 +1,12 @@
 package com.pprzservices.service;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseArray;
+import android.widget.ImageButton;
 
 import com.MAVLink.MAVLinkPacket;
 import com.aidllib.IEventListener;
@@ -142,6 +144,12 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			}
 
             case "BLOCKS": {
+                //Packet loss UDP ports
+//                http://stackoverflow.com/questions/30432974/severe-udp-packet-loss-on-some-android-devices
+
+                Log.d("blockTest1",String.valueOf(mDroneClients.get(1).getDrone().getBlocks()));
+                Log.d("blockTest2",String.valueOf(mDroneClients.get(2).getDrone().getBlocks()));
+
                 carrier.putStringArrayList(type, (ArrayList<String>) drone.getBlocks());
                 break;
             }
@@ -242,7 +250,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
             }
 
             case "REQUEST_BLOCK_LIST": {
-                for(int i=0; i<mDroneClients.size(); i++) {
+                for (int i = 0; i < mDroneClients.size(); i++) {
                     mDroneClients.get(mDroneClients.keyAt(i)).requestBlockList();
                 }
                 break;
