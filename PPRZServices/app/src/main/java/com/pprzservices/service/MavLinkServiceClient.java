@@ -48,6 +48,10 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 
     private SparseArray<DroneClient> mDroneClients = new SparseArray<>();
 
+    public Handler handler = new Handler();
+
+    private final int requestDelay = 2000; //milliseconds
+
     public MavLinkServiceClient(MavLinkService service) {
         mServiceRef = new SoftReference<>(service);
     }
@@ -134,6 +138,9 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
             }
 
 			case "WAYPOINTS": {
+
+                Log.d("wpTest1","ac"+String.valueOf(sysId)+" "+String.valueOf(mDroneClients.get(sysId).getDrone().getWaypoints().size()));
+
                 carrier.putParcelableArrayList(type, (ArrayList<? extends Parcelable>) drone.getWaypoints());
 				break;
 			}
@@ -144,11 +151,8 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			}
 
             case "BLOCKS": {
-                //Packet loss UDP ports
-//                http://stackoverflow.com/questions/30432974/severe-udp-packet-loss-on-some-android-devices
 
-                Log.d("blockTest1",String.valueOf(mDroneClients.get(1).getDrone().getBlocks()));
-                Log.d("blockTest2",String.valueOf(mDroneClients.get(2).getDrone().getBlocks()));
+                Log.d("blockTest1","ac"+String.valueOf(sysId)+" "+String.valueOf(mDroneClients.get(sysId).getDrone().getBlocks()));
 
                 carrier.putStringArrayList(type, (ArrayList<String>) drone.getBlocks());
                 break;
@@ -200,6 +204,9 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
                     mDroneClients.put(sysIdList.get(i), new DroneClient(getService().getApplicationContext(), connParams, this));
                     mDroneClients.get(sysIdList.get(i)).connect(connParams);
                 }
+
+//                handler.post(initialRequester);
+                handler.post(waypointsRequester);
                 break;
             }
 
@@ -237,14 +244,12 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
         carrier.setClassLoader(Waypoint.class.getClassLoader());
         switch (carrier.getString("TYPE")) {
             case "REQUEST_ALL_WP_LISTS": {
-                for(int i=0; i<mDroneClients.size(); i++) {
-                    mDroneClients.get(mDroneClients.keyAt(i)).requestWpList();
-                }
+                handler.post(waypointsRequester);
                 break;
             }
 
             case "REQUEST_WP_LIST": {
-                    mDroneClients.get(sysId).requestWpList();
+                mDroneClients.get(sysId).requestWpList();
                 break;
             }
 
@@ -255,9 +260,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
             }
 
             case "REQUEST_BLOCK_LIST": {
-                for (int i = 0; i < mDroneClients.size(); i++) {
-                    mDroneClients.get(mDroneClients.keyAt(i)).requestBlockList();
-                }
+                handler.post(blocksRequester);
                 break;
             }
 
@@ -275,4 +278,62 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
             }
         }
     }
+
+
+    int i = 0;
+    private Runnable blocksRequester = new Runnable() {
+        @Override
+        public void run() {
+            mDroneClients.get(mDroneClients.keyAt(i)).requestBlockList();
+            i++;
+
+            //Stop repeating if blocks have been requested for all aircraft
+            if(i==mDroneClients.size()) {
+                handler.removeCallbacks(this);
+                i = 0;
+                return;
+            }
+
+            //delay for the runnable
+            handler.postDelayed(blocksRequester, requestDelay);
+        }
+    };
+
+    int j = 0;
+    private Runnable waypointsRequester = new Runnable() {
+        @Override
+        public void run() {
+            mDroneClients.get(mDroneClients.keyAt(j)).requestWpList();
+            j++;
+
+            //Stop repeating if waypoints have been requested for all aircraft
+            if(j==mDroneClients.size()) {
+                handler.removeCallbacks(this);
+                j = 0;
+                return;
+            }
+            //delay for the runnable
+            handler.postDelayed(waypointsRequester, requestDelay);
+        }
+    };
+
+    private Runnable initialRequester = new Runnable() {
+        @Override
+        public void run() {
+            if(i<mDroneClients.size()) {
+                mDroneClients.get(mDroneClients.keyAt(i)).requestBlockList();
+                i++;
+            } else if(j<mDroneClients.size()) {
+                mDroneClients.get(mDroneClients.keyAt(j)).requestWpList();
+                j++;
+            } else {
+                handler.removeCallbacks(this);
+                i = 0;
+                j = 0;
+                return;
+            }
+            //delay for the runnable
+            handler.postDelayed(initialRequester, requestDelay);
+        }
+    };
 }
