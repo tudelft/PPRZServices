@@ -236,10 +236,15 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
     public void onCallback(Bundle carrier, int sysId) {
         carrier.setClassLoader(Waypoint.class.getClassLoader());
         switch (carrier.getString("TYPE")) {
-            case "REQUEST_WP_LIST": {
+            case "REQUEST_ALL_WP_LISTS": {
                 for(int i=0; i<mDroneClients.size(); i++) {
                     mDroneClients.get(mDroneClients.keyAt(i)).requestWpList();
                 }
+                break;
+            }
+
+            case "REQUEST_WP_LIST": {
+                    mDroneClients.get(sysId).requestWpList();
                 break;
             }
 
