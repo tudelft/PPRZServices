@@ -92,7 +92,9 @@ public class BlockClient extends MissionManager {
 
                         // Add the received block to the list of blocks
                         msg_block_item block_item = (msg_block_item) msg;
-                        blocks.add(new String(Arrays.copyOf(block_item.name, block_item.len)));
+                        if(block_item.seq==blocks.size()) { //Prevent that duplicate blocks will be saved by checking the seq number with the blocks list size
+                            blocks.add(new String(Arrays.copyOf(block_item.name, block_item.len)));
+                        }
 
                         if (blocks.size() < blockCount) {
                             // Request next block

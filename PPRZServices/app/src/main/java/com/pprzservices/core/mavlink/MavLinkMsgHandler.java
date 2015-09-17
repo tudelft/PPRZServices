@@ -1,6 +1,7 @@
 package com.pprzservices.core.mavlink;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.common.msg_attitude;
@@ -8,6 +9,7 @@ import com.MAVLink.common.msg_battery_status;
 import com.MAVLink.common.msg_global_position_int;
 import com.MAVLink.common.msg_gps_status;
 import com.MAVLink.common.msg_heartbeat;
+import com.MAVLink.common.msg_mission_item;
 import com.MAVLink.common.msg_vfr_hud;
 import com.MAVLink.enums.MAV_MODE_FLAG;
 import com.MAVLink.enums.MAV_STATE;
@@ -52,60 +54,63 @@ public class MavLinkMsgHandler {
 
     public CommandClient getCommandClient() {return mCommandClient; }
 
-    public void receiveData(MAVLinkMessage msg)
-    {
-        mWaypointClient.missionMsgHandler(msg);
+    public void receiveData(MAVLinkMessage msg) {
+        //Filter out all messages with sysId=0. The last droneclient in the list always seems to get those messages.
+        if (msg.sysid!=0) {
 
-        mBlockClient.missionMsgHandler(msg);
+            mWaypointClient.missionMsgHandler(msg);
 
-        switch (msg.msgid) {
-            case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT: {
-                msg_heartbeat msg_heart = (msg_heartbeat) msg;
-                checkIfFlying(msg_heart);
-                processState(msg_heart);
-                mDroneClient.getDrone().onHeartbeat(msg_heart);
-                break;
-            }
+            mBlockClient.missionMsgHandler(msg);
 
-	        case msg_attitude.MAVLINK_MSG_ID_ATTITUDE: {
-	            msg_attitude msg_att = (msg_attitude) msg;
-                mDroneClient.getDrone().setTime(msg_att.time_boot_ms);
-                mDroneClient.getDrone().setRollPitchYaw(msg_att.roll, msg_att.pitch, msg_att.yaw);
-	            break;
-	        }
-	        
-	        case msg_vfr_hud.MAVLINK_MSG_ID_VFR_HUD: {
-	            msg_vfr_hud msg_vfr_hud = (msg_vfr_hud) msg;
-                mDroneClient.getDrone().setAltitudeGroundAndAirSpeeds(msg_vfr_hud.alt, msg_vfr_hud.groundspeed, msg_vfr_hud.airspeed, msg_vfr_hud.climb);
-	            break;
-	        }
-            
-            case msg_battery_status.MAVLINK_MSG_ID_BATTERY_STATUS: {
-            	msg_battery_status msg_batt = (msg_battery_status) msg;
-            	
-            	// for now only use the first entry of the voltages array
-                mDroneClient.getDrone().setBatteryState(msg_batt.voltages[0], msg_batt.battery_remaining, msg_batt.current_battery);
-            	break;
+            switch (msg.msgid) {
+                case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT: {
+                    msg_heartbeat msg_heart = (msg_heartbeat) msg;
+                    checkIfFlying(msg_heart);
+                    processState(msg_heart);
+                    mDroneClient.getDrone().onHeartbeat(msg_heart);
+                    break;
+                }
+
+                case msg_attitude.MAVLINK_MSG_ID_ATTITUDE: {
+                    msg_attitude msg_att = (msg_attitude) msg;
+                    mDroneClient.getDrone().setTime(msg_att.time_boot_ms);
+                    mDroneClient.getDrone().setRollPitchYaw(msg_att.roll, msg_att.pitch, msg_att.yaw);
+                    break;
+                }
+
+                case msg_vfr_hud.MAVLINK_MSG_ID_VFR_HUD: {
+                    msg_vfr_hud msg_vfr_hud = (msg_vfr_hud) msg;
+                    mDroneClient.getDrone().setAltitudeGroundAndAirSpeeds(msg_vfr_hud.alt, msg_vfr_hud.groundspeed, msg_vfr_hud.airspeed, msg_vfr_hud.climb);
+                    break;
+                }
+
+                case msg_battery_status.MAVLINK_MSG_ID_BATTERY_STATUS: {
+                    msg_battery_status msg_batt = (msg_battery_status) msg;
+
+                    // for now only use the first entry of the voltages array
+                    mDroneClient.getDrone().setBatteryState(msg_batt.voltages[0], msg_batt.battery_remaining, msg_batt.current_battery);
+                    break;
+                }
+
+                case msg_gps_status.MAVLINK_MSG_ID_GPS_STATUS: {
+                    msg_gps_status msg_gps = (msg_gps_status) msg;
+
+                    // for now ignore all variables except the number of satellites
+                    mDroneClient.getDrone().setSatVisible(msg_gps.satellites_visible);
+                    break;
+                }
+
+                case msg_global_position_int.MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
+                    msg_global_position_int msg_pos = (msg_global_position_int) msg;
+
+                    // for now ignore the relative altitude and ground speeds
+                    mDroneClient.getDrone().setLlaHdg(msg_pos.lat, msg_pos.lon, msg_pos.alt, msg_pos.relative_alt, msg_pos.hdg);
+                    break;
+                }
+
+                default:
+                    break;
             }
-            
-            case msg_gps_status.MAVLINK_MSG_ID_GPS_STATUS: {
-            	msg_gps_status msg_gps = (msg_gps_status) msg;
-            	
-            	// for now ignore all variables except the number of satellites
-                mDroneClient.getDrone().setSatVisible(msg_gps.satellites_visible);
-            	break;
-            }
-            
-            case msg_global_position_int.MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
-            	msg_global_position_int msg_pos = (msg_global_position_int) msg;
-            
-            	// for now ignore the relative altitude and ground speeds
-                mDroneClient.getDrone().setLlaHdg(msg_pos.lat, msg_pos.lon, msg_pos.alt, msg_pos.relative_alt, msg_pos.hdg);
-            	break;
-            }
-            
-            default:
-                break;
         }
     }
 

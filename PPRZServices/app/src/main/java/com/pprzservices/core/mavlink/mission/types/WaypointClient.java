@@ -17,6 +17,7 @@ import com.pprzservices.service.MavLinkService;
 
 import android.os.Handler;
 import android.os.RemoteException;
+import android.util.Log;
 
 /**
  * WaypointClient.java - Implements the MAVLink MissionLib waypoint protocol
@@ -145,6 +146,7 @@ public class WaypointClient extends MissionManager{
     		return;
     	
     	state = StateMachine.STATE_REQUEST_LIST;
+
     	sendRequestList();
 
 		// Start the timeout thread
