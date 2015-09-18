@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseArray;
-import android.widget.ImageButton;
 
 import com.MAVLink.MAVLinkPacket;
 import com.aidllib.IEventListener;
@@ -50,7 +49,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 
     public Handler handler = new Handler();
 
-    private final int requestDelay = 2000; //milliseconds
+    private final int requestDelay = 1000; //milliseconds
 
     public MavLinkServiceClient(MavLinkService service) {
         mServiceRef = new SoftReference<>(service);
@@ -138,9 +137,6 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
             }
 
 			case "WAYPOINTS": {
-
-                Log.d("wpTest1","ac"+String.valueOf(sysId)+" "+String.valueOf(mDroneClients.get(sysId).getDrone().getWaypoints().size()));
-
                 carrier.putParcelableArrayList(type, (ArrayList<? extends Parcelable>) drone.getWaypoints());
 				break;
 			}
@@ -151,9 +147,6 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 			}
 
             case "BLOCKS": {
-
-                Log.d("blockTest1","ac"+String.valueOf(sysId)+" "+String.valueOf(mDroneClients.get(sysId).getDrone().getBlocks()));
-
                 carrier.putStringArrayList(type, (ArrayList<String>) drone.getBlocks());
                 break;
             }
@@ -205,8 +198,8 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
                     mDroneClients.get(sysIdList.get(i)).connect(connParams);
                 }
 
-//                handler.post(initialRequester);
-                handler.post(waypointsRequester);
+                //Request waypoints and blocks
+                handler.post(initialRequester);
                 break;
             }
 
@@ -232,10 +225,8 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
 
 	@Override
 	public void onEvent(String type, int sysId) throws RemoteException {
-        if(sysId!=0) {
-            for (IEventListener listener : mListeners.values()) {
-                listener.onEvent(type, sysId);
-            }
+        for (IEventListener listener : mListeners.values()) {
+            listener.onEvent(type, sysId);
         }
 	}
 
@@ -279,7 +270,7 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
         }
     }
 
-
+    //////////Runnables used for blocks and waypoints requesting (prevent everything is requested at the same time)//////////
     int i = 0;
     private Runnable blocksRequester = new Runnable() {
         @Override

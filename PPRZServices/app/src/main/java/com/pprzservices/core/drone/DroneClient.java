@@ -8,7 +8,6 @@ import android.util.Log;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.aidllib.core.ConnectionParameter;
-import com.aidllib.core.mavlink.waypoints.Waypoint;
 import com.pprzservices.core.drone.DroneInterfaces.DroneEventsType;
 import com.pprzservices.core.drone.DroneInterfaces.OnDroneListener;
 import com.pprzservices.core.mavlink.MavLinkClient;
@@ -53,12 +52,6 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
     public void connect(ConnectionParameter connParams) {
         if (!mMavLinkClient.isConnected()) {
             mMavLinkClient.openConnection();
-
-            // Request list of waypoints
-//            requestWpList();
-
-            // Request list of blocks
-//            requestBlockList();
         }
     }
 
@@ -118,6 +111,11 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
             Log.e(TAG,"Error on drone event");
         }
 	}
+
+    //Request a single waypoint
+    public void requestWp(short wpNumber) {
+        mMavLinkMsgHandler.getWaypointClient().requestItem(wpNumber);
+    }
 
     // Request list of waypoints
     public void requestWpList() {

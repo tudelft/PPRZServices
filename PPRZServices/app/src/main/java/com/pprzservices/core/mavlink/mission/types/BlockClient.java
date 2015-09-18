@@ -2,7 +2,6 @@ package com.pprzservices.core.mavlink.mission.types;
 
 import android.os.Handler;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.paparazzi.msg_block_count;
@@ -14,7 +13,6 @@ import com.pprzservices.core.drone.DroneInterfaces;
 import com.pprzservices.core.mavlink.mission.MissionManager;
 import com.pprzservices.service.MavLinkService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -92,9 +90,9 @@ public class BlockClient extends MissionManager {
 
                         // Add the received block to the list of blocks
                         msg_block_item block_item = (msg_block_item) msg;
-                        if(block_item.seq==blocks.size()) { //Prevent that duplicate blocks will be saved by checking the seq number with the blocks list size
-                            blocks.add(new String(Arrays.copyOf(block_item.name, block_item.len)));
-                        }
+//                        if(block_item.seq==blocks.size()) { //Prevent that duplicate blocks will be saved by checking the seq number with the blocks list size
+                        blocks.add(new String(Arrays.copyOf(block_item.name, block_item.len)));
+//                        }
 
                         if (blocks.size() < blockCount) {
                             // Request next block

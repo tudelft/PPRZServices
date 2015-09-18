@@ -1,6 +1,5 @@
 package com.pprzservices.core.mavlink.mission.types;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.MAVLink.Messages.MAVLinkMessage;
@@ -13,11 +12,9 @@ import com.aidllib.core.mavlink.waypoints.Waypoint;
 import com.pprzservices.core.drone.DroneClient;
 import com.pprzservices.core.drone.DroneInterfaces;
 import com.pprzservices.core.mavlink.mission.MissionManager;
-import com.pprzservices.service.MavLinkService;
 
 import android.os.Handler;
 import android.os.RemoteException;
-import android.util.Log;
 
 /**
  * WaypointClient.java - Implements the MAVLink MissionLib waypoint protocol

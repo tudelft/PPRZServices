@@ -1,7 +1,6 @@
 package com.pprzservices.core.mavlink;
 
 import android.os.Handler;
-import android.util.Log;
 
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.common.msg_attitude;
@@ -9,7 +8,6 @@ import com.MAVLink.common.msg_battery_status;
 import com.MAVLink.common.msg_global_position_int;
 import com.MAVLink.common.msg_gps_status;
 import com.MAVLink.common.msg_heartbeat;
-import com.MAVLink.common.msg_mission_item;
 import com.MAVLink.common.msg_vfr_hud;
 import com.MAVLink.enums.MAV_MODE_FLAG;
 import com.MAVLink.enums.MAV_STATE;
@@ -57,7 +55,6 @@ public class MavLinkMsgHandler {
     public void receiveData(MAVLinkMessage msg) {
         //Filter out all messages with sysId=0. The last droneclient in the list always seems to get those messages.
         if (msg.sysid!=0) {
-
             mWaypointClient.missionMsgHandler(msg);
 
             mBlockClient.missionMsgHandler(msg);

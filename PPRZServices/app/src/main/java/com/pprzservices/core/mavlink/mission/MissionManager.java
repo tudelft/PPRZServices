@@ -1,7 +1,6 @@
 package com.pprzservices.core.mavlink.mission;
 
 import android.os.Handler;
-import android.util.Log;
 
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.common.msg_mission_ack;
