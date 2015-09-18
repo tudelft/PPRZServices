@@ -112,11 +112,6 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
         }
 	}
 
-    //Request a single waypoint
-    public void requestWp(short wpNumber) {
-        mMavLinkMsgHandler.getWaypointClient().requestItem(wpNumber);
-    }
-
     // Request list of waypoints
     public void requestWpList() {
         mMavLinkMsgHandler.getWaypointClient().requestList();
