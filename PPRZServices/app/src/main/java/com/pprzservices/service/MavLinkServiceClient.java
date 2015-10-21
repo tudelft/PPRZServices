@@ -255,6 +255,11 @@ public class MavLinkServiceClient extends IMavLinkServiceClient.Stub {
                 break;
             }
 
+            case "REQUEST_CURRENT_BLOCK": {
+                mDroneClients.get(sysId).requestCurrentBlock();
+                break;
+            }
+
             case "BLOCK_SELECTED": {
                 mDroneClients.get(sysId).setCurrentBlock(carrier.getShort("SEQ"));
                 break;

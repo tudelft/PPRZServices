@@ -132,6 +132,10 @@ public class DroneClient implements MavLinkStreams.MavlinkInputStream, OnDroneLi
         mMavLinkMsgHandler.getBlockClient().requestList();
     }
 
+    public void requestCurrentBlock() {
+        //TODO: request current block
+    }
+
     public void setCurrentBlock(short seq) {
         mMavLinkMsgHandler.getBlockClient().sendItem(seq);
     }
