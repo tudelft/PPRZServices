@@ -4,10 +4,10 @@ import android.os.Handler;
 import android.os.RemoteException;
 
 import com.MAVLink.Messages.MAVLinkMessage;
-import com.MAVLink.paparazzi.msg_block_count;
-import com.MAVLink.paparazzi.msg_block_item;
-import com.MAVLink.paparazzi.msg_block_request;
-import com.MAVLink.paparazzi.msg_block_request_list;
+import com.MAVLink.paparazzi.msg_script_count;
+import com.MAVLink.paparazzi.msg_script_item;
+import com.MAVLink.paparazzi.msg_script_request;
+import com.MAVLink.paparazzi.msg_script_request_list;
 import com.pprzservices.core.drone.DroneClient;
 import com.pprzservices.core.drone.DroneInterfaces;
 import com.pprzservices.core.mavlink.mission.MissionManager;
@@ -33,8 +33,8 @@ public class BlockClient extends MissionManager {
     public void missionMsgHandler(MAVLinkMessage msg) {
         switch (state) {
             case STATE_IDLE: {
-                if (msg.msgid == msg_block_item.MAVLINK_MSG_ID_BLOCK_ITEM) {
-                    mClient.getDrone().setCurrentBlock(((msg_block_item) msg).seq);
+                if (msg.msgid == msg_script_item.MAVLINK_MSG_ID_SCRIPT_ITEM) {
+                    mClient.getDrone().setCurrentBlock(((msg_script_item) msg).seq);
 
                     // Send acknowledgement
                     sendMissionAck();
@@ -43,7 +43,7 @@ public class BlockClient extends MissionManager {
             }
 
             case STATE_REQUEST_LIST: {
-                if (msg.msgid == msg_block_count.MAVLINK_MSG_ID_BLOCK_COUNT) {
+                if (msg.msgid == msg_script_count.MAVLINK_MSG_ID_SCRIPT_COUNT) {
                     List<String> blocks = null;
                     try {
                         blocks = mClient.getDrone().getBlocks();
@@ -57,7 +57,7 @@ public class BlockClient extends MissionManager {
                         nRetries = 0;
 
                         // Store the number of mission blocks
-                        blockCount = ((msg_block_count) msg).count;
+                        blockCount = ((msg_script_count) msg).count;
 
                         // Clear the current list
                         blocks.clear();
@@ -75,7 +75,7 @@ public class BlockClient extends MissionManager {
             }
 
             case STATE_REQUEST_ITEM: {
-                if (msg.msgid == msg_block_item.MAVLINK_MSG_ID_BLOCK_ITEM) {
+                if (msg.msgid == msg_script_item.MAVLINK_MSG_ID_SCRIPT_ITEM) {
                     List<String> blocks = null;
                     try {
                         blocks = mClient.getDrone().getBlocks();
@@ -89,7 +89,7 @@ public class BlockClient extends MissionManager {
                         nRetries = 0;
 
                         // Add the received block to the list of blocks
-                        msg_block_item block_item = (msg_block_item) msg;
+                        msg_script_item block_item = (msg_script_item) msg;
 //                        if(block_item.seq==blocks.size()) { //Prevent that duplicate blocks will be saved by checking the seq number with the blocks list size
                         blocks.add(new String(Arrays.copyOf(block_item.name, block_item.len)));
 //                        }
@@ -134,7 +134,7 @@ public class BlockClient extends MissionManager {
 
     @Override
     public void sendRequestList() {
-        msg_block_request_list msg = new msg_block_request_list();
+        msg_script_request_list msg = new msg_script_request_list();
         msg.target_system = mClient.getDrone().getSysid();
         msg.target_component = mClient.getDrone().getCompid();
         mClient.getMavLinkClient().sendMavPacket(msg.pack());
@@ -148,7 +148,7 @@ public class BlockClient extends MissionManager {
 
     @Override
     public void sendRequestItem(short seq) {
-        msg_block_request msg = new msg_block_request();
+        msg_script_request msg = new msg_script_request();
         msg.target_system = mClient.getDrone().getSysid();
         msg.target_component = mClient.getDrone().getCompid();
         msg.seq = seq;
@@ -157,7 +157,7 @@ public class BlockClient extends MissionManager {
 
     @Override
     public void sendItem(short seq) {
-        msg_block_item msg = new msg_block_item();
+        msg_script_item msg = new msg_script_item();
         msg.target_system = mClient.getDrone().getSysid();
         msg.target_component = mClient.getDrone().getCompid();
         msg.seq = seq;
