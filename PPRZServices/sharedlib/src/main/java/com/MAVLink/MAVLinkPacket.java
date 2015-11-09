@@ -128,14 +128,14 @@ package com.MAVLink;
         */
         public MAVLinkMessage unpack() {
 		switch (msgid) {
-                    		case msg_block_item.MAVLINK_MSG_ID_BLOCK_ITEM:
-			return  new msg_block_item(this);
-            		case msg_block_request.MAVLINK_MSG_ID_BLOCK_REQUEST:
-			return  new msg_block_request(this);
-            		case msg_block_request_list.MAVLINK_MSG_ID_BLOCK_REQUEST_LIST:
-			return  new msg_block_request_list(this);
-            		case msg_block_count.MAVLINK_MSG_ID_BLOCK_COUNT:
-			return  new msg_block_count(this);
+                    		case msg_script_item.MAVLINK_MSG_ID_SCRIPT_ITEM:
+			return  new msg_script_item(this);
+            		case msg_script_request.MAVLINK_MSG_ID_SCRIPT_REQUEST:
+			return  new msg_script_request(this);
+            		case msg_script_request_list.MAVLINK_MSG_ID_SCRIPT_REQUEST_LIST:
+			return  new msg_script_request_list(this);
+            		case msg_script_count.MAVLINK_MSG_ID_SCRIPT_COUNT:
+			return  new msg_script_count(this);
             
                         		case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT:
 			return  new msg_heartbeat(this);

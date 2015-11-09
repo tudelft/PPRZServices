@@ -1,4 +1,4 @@
-        // MESSAGE BLOCK_ITEM PACKING
+        // MESSAGE SCRIPT_ITEM PACKING
 package com.MAVLink.paparazzi;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
@@ -6,13 +6,13 @@ import com.MAVLink.Messages.MAVLinkPayload;
         //import android.util.Log;
         
         /**
-        * Message encoding a mission block item. This message is emitted upon a request for the next block item.
+        * Message encoding a mission script item. This message is emitted upon a request for the next script item.
         */
-        public class msg_block_item extends MAVLinkMessage{
+        public class msg_script_item extends MAVLinkMessage{
         
-        public static final int MAVLINK_MSG_ID_BLOCK_ITEM = 180;
+        public static final int MAVLINK_MSG_ID_SCRIPT_ITEM = 180;
         public static final int MAVLINK_MSG_LENGTH = 55;
-        private static final long serialVersionUID = MAVLINK_MSG_ID_BLOCK_ITEM;
+        private static final long serialVersionUID = MAVLINK_MSG_ID_SCRIPT_ITEM;
         
         
          	/**
@@ -32,7 +32,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         */
         public byte len;
          	/**
-        * The name of the mission block
+        * The name of the mission script
         */
         public byte name[] = new byte[50];
         
@@ -46,7 +46,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
 		packet.len = MAVLINK_MSG_LENGTH;
 		packet.sysid = 255;
 		packet.compid = 190;
-		packet.msgid = MAVLINK_MSG_ID_BLOCK_ITEM;
+		packet.msgid = MAVLINK_MSG_ID_SCRIPT_ITEM;
         		packet.payload.putShort(seq);
         		packet.payload.putByte(target_system);
         		packet.payload.putByte(target_component);
@@ -59,7 +59,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         }
         
         /**
-        * Decode a block_item message into this class fields
+        * Decode a script_item message into this class fields
         *
         * @param payload The message to decode
         */
@@ -78,8 +78,8 @@ import com.MAVLink.Messages.MAVLinkPayload;
         /**
         * Constructor for a new message, just initializes the msgid
         */
-        public msg_block_item(){
-    	msgid = MAVLINK_MSG_ID_BLOCK_ITEM;
+        public msg_script_item(){
+    	msgid = MAVLINK_MSG_ID_SCRIPT_ITEM;
         }
         
         /**
@@ -87,13 +87,13 @@ import com.MAVLink.Messages.MAVLinkPayload;
         * from a mavlink packet
         *
         */
-        public msg_block_item(MAVLinkPacket mavLinkPacket){
+        public msg_script_item(MAVLinkPacket mavLinkPacket){
         this.sysid = mavLinkPacket.sysid;
         this.compid = mavLinkPacket.compid;
-        this.msgid = MAVLINK_MSG_ID_BLOCK_ITEM;
+        this.msgid = MAVLINK_MSG_ID_SCRIPT_ITEM;
         unpack(mavLinkPacket.payload);
-        //Log.d("MAVLink", "BLOCK_ITEM");
-        //Log.d("MAVLINK_MSG_ID_BLOCK_ITEM", toString());
+        //Log.d("MAVLink", "SCRIPT_ITEM");
+        //Log.d("MAVLINK_MSG_ID_SCRIPT_ITEM", toString());
         }
         
                  /**
@@ -127,7 +127,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         * Returns a string with the MSG name and data
         */
         public String toString(){
-    	return "MAVLINK_MSG_ID_BLOCK_ITEM -"+" seq:"+seq+" target_system:"+target_system+" target_component:"+target_component+" len:"+len+" name:"+name+"";
+    	return "MAVLINK_MSG_ID_SCRIPT_ITEM -"+" seq:"+seq+" target_system:"+target_system+" target_component:"+target_component+" len:"+len+" name:"+name+"";
         }
         }
         

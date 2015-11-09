@@ -14,8 +14,9 @@ import com.MAVLink.Messages.MAVLinkPayload;
         public static final int MAVLINK_MSG_ID_MISSION_ITEM = 39;
         public static final int MAVLINK_MSG_LENGTH = 37;
         private static final long serialVersionUID = MAVLINK_MSG_ID_MISSION_ITEM;
-
-			/**
+        
+        
+         	/**
         * PARAM1, see MAV_CMD enum
         */
         public float param1;

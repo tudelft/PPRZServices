@@ -1,4 +1,4 @@
-        // MESSAGE BLOCK_REQUEST_LIST PACKING
+        // MESSAGE SCRIPT_REQUEST_LIST PACKING
 package com.MAVLink.paparazzi;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
@@ -8,11 +8,11 @@ import com.MAVLink.Messages.MAVLinkPayload;
         /**
         * Request the overall list of mission items from the system/component.
         */
-        public class msg_block_request_list extends MAVLinkMessage{
+        public class msg_script_request_list extends MAVLinkMessage{
         
-        public static final int MAVLINK_MSG_ID_BLOCK_REQUEST_LIST = 182;
+        public static final int MAVLINK_MSG_ID_SCRIPT_REQUEST_LIST = 182;
         public static final int MAVLINK_MSG_LENGTH = 2;
-        private static final long serialVersionUID = MAVLINK_MSG_ID_BLOCK_REQUEST_LIST;
+        private static final long serialVersionUID = MAVLINK_MSG_ID_SCRIPT_REQUEST_LIST;
         
         
          	/**
@@ -34,7 +34,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
 		packet.len = MAVLINK_MSG_LENGTH;
 		packet.sysid = 255;
 		packet.compid = 190;
-		packet.msgid = MAVLINK_MSG_ID_BLOCK_REQUEST_LIST;
+		packet.msgid = MAVLINK_MSG_ID_SCRIPT_REQUEST_LIST;
         		packet.payload.putByte(target_system);
         		packet.payload.putByte(target_component);
         
@@ -42,7 +42,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         }
         
         /**
-        * Decode a block_request_list message into this class fields
+        * Decode a script_request_list message into this class fields
         *
         * @param payload The message to decode
         */
@@ -56,8 +56,8 @@ import com.MAVLink.Messages.MAVLinkPayload;
         /**
         * Constructor for a new message, just initializes the msgid
         */
-        public msg_block_request_list(){
-    	msgid = MAVLINK_MSG_ID_BLOCK_REQUEST_LIST;
+        public msg_script_request_list(){
+    	msgid = MAVLINK_MSG_ID_SCRIPT_REQUEST_LIST;
         }
         
         /**
@@ -65,13 +65,13 @@ import com.MAVLink.Messages.MAVLinkPayload;
         * from a mavlink packet
         *
         */
-        public msg_block_request_list(MAVLinkPacket mavLinkPacket){
+        public msg_script_request_list(MAVLinkPacket mavLinkPacket){
         this.sysid = mavLinkPacket.sysid;
         this.compid = mavLinkPacket.compid;
-        this.msgid = MAVLINK_MSG_ID_BLOCK_REQUEST_LIST;
+        this.msgid = MAVLINK_MSG_ID_SCRIPT_REQUEST_LIST;
         unpack(mavLinkPacket.payload);
-        //Log.d("MAVLink", "BLOCK_REQUEST_LIST");
-        //Log.d("MAVLINK_MSG_ID_BLOCK_REQUEST_LIST", toString());
+        //Log.d("MAVLink", "SCRIPT_REQUEST_LIST");
+        //Log.d("MAVLINK_MSG_ID_SCRIPT_REQUEST_LIST", toString());
         }
         
             
@@ -79,7 +79,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         * Returns a string with the MSG name and data
         */
         public String toString(){
-    	return "MAVLINK_MSG_ID_BLOCK_REQUEST_LIST -"+" target_system:"+target_system+" target_component:"+target_component+"";
+    	return "MAVLINK_MSG_ID_SCRIPT_REQUEST_LIST -"+" target_system:"+target_system+" target_component:"+target_component+"";
         }
         }
         

@@ -1,4 +1,4 @@
-        // MESSAGE BLOCK_COUNT PACKING
+        // MESSAGE SCRIPT_COUNT PACKING
 package com.MAVLink.paparazzi;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
@@ -6,13 +6,13 @@ import com.MAVLink.Messages.MAVLinkPayload;
         //import android.util.Log;
         
         /**
-        * This message is emitted as response to BLOCK_REQUEST_LIST by the MAV to get the number of mission blocks.
+        * This message is emitted as response to SCRIPT_REQUEST_LIST by the MAV to get the number of mission scripts.
         */
-        public class msg_block_count extends MAVLinkMessage{
+        public class msg_script_count extends MAVLinkMessage{
         
-        public static final int MAVLINK_MSG_ID_BLOCK_COUNT = 183;
+        public static final int MAVLINK_MSG_ID_SCRIPT_COUNT = 183;
         public static final int MAVLINK_MSG_LENGTH = 4;
-        private static final long serialVersionUID = MAVLINK_MSG_ID_BLOCK_COUNT;
+        private static final long serialVersionUID = MAVLINK_MSG_ID_SCRIPT_COUNT;
         
         
          	/**
@@ -38,7 +38,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
 		packet.len = MAVLINK_MSG_LENGTH;
 		packet.sysid = 255;
 		packet.compid = 190;
-		packet.msgid = MAVLINK_MSG_ID_BLOCK_COUNT;
+		packet.msgid = MAVLINK_MSG_ID_SCRIPT_COUNT;
         		packet.payload.putShort(count);
         		packet.payload.putByte(target_system);
         		packet.payload.putByte(target_component);
@@ -47,7 +47,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         }
         
         /**
-        * Decode a block_count message into this class fields
+        * Decode a script_count message into this class fields
         *
         * @param payload The message to decode
         */
@@ -62,8 +62,8 @@ import com.MAVLink.Messages.MAVLinkPayload;
         /**
         * Constructor for a new message, just initializes the msgid
         */
-        public msg_block_count(){
-    	msgid = MAVLINK_MSG_ID_BLOCK_COUNT;
+        public msg_script_count(){
+    	msgid = MAVLINK_MSG_ID_SCRIPT_COUNT;
         }
         
         /**
@@ -71,13 +71,13 @@ import com.MAVLink.Messages.MAVLinkPayload;
         * from a mavlink packet
         *
         */
-        public msg_block_count(MAVLinkPacket mavLinkPacket){
+        public msg_script_count(MAVLinkPacket mavLinkPacket){
         this.sysid = mavLinkPacket.sysid;
         this.compid = mavLinkPacket.compid;
-        this.msgid = MAVLINK_MSG_ID_BLOCK_COUNT;
+        this.msgid = MAVLINK_MSG_ID_SCRIPT_COUNT;
         unpack(mavLinkPacket.payload);
-        //Log.d("MAVLink", "BLOCK_COUNT");
-        //Log.d("MAVLINK_MSG_ID_BLOCK_COUNT", toString());
+        //Log.d("MAVLink", "SCRIPT_COUNT");
+        //Log.d("MAVLINK_MSG_ID_SCRIPT_COUNT", toString());
         }
         
               
@@ -85,7 +85,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         * Returns a string with the MSG name and data
         */
         public String toString(){
-    	return "MAVLINK_MSG_ID_BLOCK_COUNT -"+" count:"+count+" target_system:"+target_system+" target_component:"+target_component+"";
+    	return "MAVLINK_MSG_ID_SCRIPT_COUNT -"+" count:"+count+" target_system:"+target_system+" target_component:"+target_component+"";
         }
         }
         
