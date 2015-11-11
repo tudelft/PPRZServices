@@ -2,5 +2,6 @@
     <string name="app_name">PPRZServices</string>
 
     <string name="message_string">PaparazziUAV Services</string>
+    <string name="button_bebop_start">Start Paparazzi on Bebop</string>
     <string name="action_settings">Settings</string>
 </resources>
