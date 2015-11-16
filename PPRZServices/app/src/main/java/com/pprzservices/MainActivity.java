@@ -83,12 +83,14 @@ public class MainActivity extends Activity {
 
 
 	public void bebopStart() {
-        if(mThread != null)
+        if (mThread != null)
         {
-            mThread.stop();
-            mThread = null;
+            if (mThread.isAlive())
+            {
+                showToast("Still busy...");
+                return;
+            }
         }
-
         mThread = new Thread(new TelnetClient());
         mThread.start();
 	}
@@ -128,14 +130,14 @@ public class MainActivity extends Activity {
                 e1.printStackTrace();
             }
         }
-/*
-        public void read()
+
+        public String read()
         {
             try
             {
                 InputStream streamInput = mSocket.getInputStream();
 
-                byte[] arrayOfByte = new byte[10000];
+                byte[] arrayOfByte = new byte[512];
                 int j = 0;
                 try
                 {
@@ -143,8 +145,9 @@ public class MainActivity extends Activity {
                     j = streamInput.read(arrayOfByte, 0, i);
                     if (j == -1)
                     {
-                        throw new Exception("Error while reading socket.");
+                        return "<read nothing>";
                     }
+                    return new String(arrayOfByte);
                 }
                 catch (Exception e0)
                 {
@@ -163,8 +166,8 @@ public class MainActivity extends Activity {
             {
                 e1.printStackTrace();
             }
+            return "";
         }
-*/
 
 
         public void run()
@@ -173,25 +176,28 @@ public class MainActivity extends Activity {
             {
                 Socket socket = new Socket("192.168.42.1", 23);
                 mSocket = socket;
-
-                SystemClock.sleep(100);
+                if (!socket.isConnected())
+                {
+                    showToast("Failed to connect.");
+                    return;
+                }
                 showToast("Connected");
-
-                this.send("root\n");
-
-                SystemClock.sleep(200);
-                this.send("\n");
-
+                SystemClock.sleep(900);
+                showToast(this.read());
+                SystemClock.sleep(900);
+                showToast("Stopping Parrot Firmware");
+                this.send("killall -9 ap.elf\n");
                 SystemClock.sleep(500);
-                this.send("killall -9 dragon-prog.elf\n");
-                this.send("killall -9 program.elf\n");
-
+                this.send("killall -9 DragonStarter\n");
+                SystemClock.sleep(500);
+                this.send("killall -9 dragon-prog\n");
                 SystemClock.sleep(1000);
-                this.send("cd /data/ftp/ap/\n");
-
-                SystemClock.sleep(500);
-                this.send("./ap.ef > /dev/null 2>&1 &\n");
-
+                showToast(this.read());
+                SystemClock.sleep(2000);
+                this.send("/data/ftp/internal_000/paparazzi/ap.elf > /dev/null 2>&1 &\n");
+                showToast("Starting Paparazzi ap.elf");
+                SystemClock.sleep(1000);
+                showToast(this.read());
                 socket.close();
                 mSocket = null;
             }
