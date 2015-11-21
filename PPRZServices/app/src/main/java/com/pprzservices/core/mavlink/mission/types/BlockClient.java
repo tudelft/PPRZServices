@@ -5,6 +5,7 @@ import android.os.RemoteException;
 
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.paparazzi.msg_script_count;
+import com.MAVLink.paparazzi.msg_script_current;
 import com.MAVLink.paparazzi.msg_script_item;
 import com.MAVLink.paparazzi.msg_script_request;
 import com.MAVLink.paparazzi.msg_script_request_list;
@@ -13,7 +14,6 @@ import com.pprzservices.core.drone.DroneInterfaces;
 import com.pprzservices.core.mavlink.mission.MissionManager;
 import com.pprzservices.service.MavLinkService;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,8 +33,8 @@ public class BlockClient extends MissionManager {
     public void missionMsgHandler(MAVLinkMessage msg) {
         switch (state) {
             case STATE_IDLE: {
-                if (msg.msgid == msg_script_item.MAVLINK_MSG_ID_SCRIPT_ITEM) {
-                    mClient.getDrone().setCurrentBlock(((msg_script_item) msg).seq);
+                if (msg.msgid == msg_script_current.MAVLINK_MSG_ID_SCRIPT_CURRENT) {
+                    mClient.getDrone().setCurrentBlock(((msg_script_current) msg).seq);
 
                     // Send acknowledgement
                     sendMissionAck();
@@ -91,7 +91,7 @@ public class BlockClient extends MissionManager {
                         // Add the received block to the list of blocks
                         msg_script_item block_item = (msg_script_item) msg;
 //                        if(block_item.seq==blocks.size()) { //Prevent that duplicate blocks will be saved by checking the seq number with the blocks list size
-                        blocks.add(new String(Arrays.copyOf(block_item.name, block_item.len)));
+                        blocks.add(block_item.getName());
 //                        }
 
                         if (blocks.size() < blockCount) {
