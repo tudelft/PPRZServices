@@ -136,6 +136,8 @@ package com.MAVLink;
 			return  new msg_script_request_list(this);
             		case msg_script_count.MAVLINK_MSG_ID_SCRIPT_COUNT:
 			return  new msg_script_count(this);
+            		case msg_script_current.MAVLINK_MSG_ID_SCRIPT_CURRENT:
+			return  new msg_script_current(this);
             
                         		case msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT:
 			return  new msg_heartbeat(this);

@@ -16,7 +16,7 @@ import com.MAVLink.Messages.MAVLinkPayload;
         
         
          	/**
-        * Number of mission items in the sequence
+        * Number of script items in the sequence
         */
         public short count;
          	/**
