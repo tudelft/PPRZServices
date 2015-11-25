@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PPRZServices</string>
+    <string name="app_name">PPRZServices 1.4</string>
 
     <string name="message_string">PaparazziUAV Services</string>
     <string name="button_bebop_start">Start Paparazzi on Bebop</string>
